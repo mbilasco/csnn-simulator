@@ -116,6 +116,7 @@ void SparseIntermediateExecution::_process_output(size_t index) {
 	// TEMPORARY
 	// Find a way to add a postprocessing before the output conversion
 	// Save train and test sets into files
+	std::cout<<"I save datasets in files...."<<std::endl;
 	_SavePairVector("layer_" + std::to_string(index) + "_train.json", _train_set);
 	_SavePairVector("layer_" + std::to_string(index) + "_test.json", _test_set);
 
