@@ -116,10 +116,10 @@ void SparseIntermediateExecution::_process_output(size_t index) {
 	// TEMPORARY
 	// Find a way to add a postprocessing before the output conversion
 	// Save train and test sets into files
-	std::cout<<"I save datasets in files...."<<std::endl;
-	std::cout<<_experiment.output_count()<<std::endl;
-	_SavePairVector("layer_" + std::to_string(index) + "_train.json", _train_set);
-	_SavePairVector("layer_" + std::to_string(index) + "_test.json", _test_set);
+	if (index > 4) { //Hardcoded, need to find a robust solution
+		_SavePairVector("layer_" + std::to_string(index) + "_train.json", _train_set);
+		_SavePairVector("layer_" + std::to_string(index) + "_test.json", _test_set);
+	}
 
 	for(size_t i=0; i<_experiment.output_count(); i++) {
 		if(_experiment.output_at(i).index() == index) {
