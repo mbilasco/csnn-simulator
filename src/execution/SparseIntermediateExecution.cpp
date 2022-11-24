@@ -112,6 +112,13 @@ void SparseIntermediateExecution::_process_test_data(AbstractProcess& process, s
 }
 
 void SparseIntermediateExecution::_process_output(size_t index) {
+
+	// TEMPORARY
+	// Find a way to add a postprocessing before the output conversion
+	// Save train and test sets into files
+	_SavePairVector("layer_" + std::to_string(layer_index) + "_train.json", _train_set);
+	_SavePairVector("layer_" + std::to_string(layer_index) + "_test.json", _test_set);
+
 	for(size_t i=0; i<_experiment.output_count(); i++) {
 		if(_experiment.output_at(i).index() == index) {
 			Output& output = _experiment.output_at(i);
@@ -167,4 +174,63 @@ void SparseIntermediateExecution::_process_output(size_t index) {
 			}
 		}
 	}
+}
+
+void SparseIntermediateExecution::_SavePairVector(std::string fileName, std::vector<std::pair<std::string, SparseTensor<float>>> set)
+{
+    std::ofstream _jsonTextFile;
+    _jsonTextFile.open(fileName, std::ios_base::app);
+    std::string JSON_output;
+    std::string type_Name;
+    _jsonTextFile << "[";
+
+    for (std::size_t i = 0; i < set.size(); ++i)
+    {
+		// Extract sample and label associated
+		std::string label = set[i].first;
+		SparseTensor<float> sample = set[i].second;
+
+		// Convert sparse tensor of spike times into vector of spikes
+		Tensor<float> sample = from_sparse_tensor(sample);
+		std::vector<Spike> spks;
+		SpikeConverter::to_spike(sample, spks);
+
+		// Create a JSON document that holds the memory of the sample to serialize
+		DynamicJsonDocument doc(JSON_OBJECT_SIZE(4 + 4 * 4 * spks.size()));
+
+		// Create the main object
+		JsonObject root = doc.to<JsonObject>();
+
+		// Fill label info
+		root["label"] = label;
+
+		// Array containing spikes
+		JsonArray spks_arr = root.createNestedArray("data");
+		// Filling it with spike objects
+		for(Spike spk : spks)
+		{
+			JsonObject spk_obj = spks_arr.createNestedObject();
+			spk_obj["x"] = spk.x;
+			spk_obj["y"] = spk.y;
+			spk_obj["z"] = spk.z;
+			spk_obj["time"] = spk.time;
+			if (!spk_obj.containsKey("x") || !spk_obj.containsKey("y") || !spk_obj.containsKey("z") || !spk_obj.containsKey("time"))
+			{
+				std::cout << spk_obj << std::endl;
+				std::cout << "x:" + std::to_string(spk.x) + " " + "y:" + std::to_string(spk.y) + " " + "z:" + std::to_string(spk.z) + " " + "t:" + std::to_string(spk.time) << std::endl;
+			}
+		}
+
+		// Transform to string
+		serializeJson(doc, JSON_output);
+
+		// Append to the file
+        _jsonTextFile << JSON_output;
+        if (i != set.size() - 1)
+            _jsonTextFile << ",";
+        JSON_output = "";
+    }
+
+    _jsonTextFile << "]";
+    _jsonTextFile.close();
 }

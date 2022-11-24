@@ -64,12 +64,22 @@ int main(int argc, char** argv) {
 	conv1.parameter<Tensor<float>>("th").distribution<distribution::Gaussian>(10.0, 0.1);
 	conv1.parameter<STDP>("stdp").set<stdp::Multiplicative>(w_lr, 1.0);
 
+	auto& pool1 = experiment.push<layer::Pooling>(2, 2, 2, 2);
+	pool1.set_name("pool1");
+
 	auto& conv1_out = experiment.output<TimeObjectiveOutput>(conv1, t_obj);
-	conv1_out.add_postprocessing<process::SumPooling>(2, 2);
+	//conv1_out.add_postprocessing<process::SumPooling>(2, 2);
 	conv1_out.add_postprocessing<process::FeatureScaling>();
 	conv1_out.add_analysis<analysis::Activity>();
 	conv1_out.add_analysis<analysis::Coherence>();
 	conv1_out.add_analysis<analysis::Svm>();
+
+	auto& pool1_out = experiment.output<TimeObjectiveOutput>(pool1, t_obj);
+	//pool1_out.add_postprocessing<process::SumPooling>(2, 2);
+	pool1_out.add_postprocessing<process::FeatureScaling>();
+	pool1_out.add_analysis<analysis::Activity>();
+	pool1_out.add_analysis<analysis::Coherence>();
+	pool1_out.add_analysis<analysis::Svm>();
 
 #ifdef ENABLE_QT
 	conv1.plot_threshold(true);
