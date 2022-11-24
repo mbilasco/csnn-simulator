@@ -191,9 +191,9 @@ void SparseIntermediateExecution::_SavePairVector(std::string fileName, std::vec
 		SparseTensor<float> sample = set[i].second;
 
 		// Convert sparse tensor of spike times into vector of spikes
-		Tensor<float> sample = from_sparse_tensor(sample);
+		Tensor<float> current = from_sparse_tensor(sample);
 		std::vector<Spike> spks;
-		SpikeConverter::to_spike(sample, spks);
+		SpikeConverter::to_spike(current, spks);
 
 		// Create a JSON document that holds the memory of the sample to serialize
 		DynamicJsonDocument doc(JSON_OBJECT_SIZE(4 + 4 * 4 * spks.size()));
