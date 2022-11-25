@@ -71,20 +71,19 @@ int main(int argc, char** argv) {
 	auto& pool2 = experiment.push<layer::Pooling>(2, 2, 2, 2);
 	pool2.set_name("pool2");
 
-	"""
-	auto& fc1 = experiment.push<layer::Convolution>(4, 4, 4096);
-	fc1.set_name("fc1");
+	//auto& fc1 = experiment.push<layer::Convolution>(4, 4, 4096);
+	//fc1.set_name("fc1");
 	//fc1.parameter<Training>("training").set<std::Annealing>(100, 0.95f);
-	fc1.parameter<uint32_t>("epoch").set(100);
-	fc1.parameter<float>("annealing").set(0.95f);
-	fc1.parameter<float>("min_th").set(1.0f);
-	fc1.parameter<float>("t_obj").set(t_obj);
-	fc1.parameter<float>("lr_th").set(th_lr);
-	fc1.parameter<bool>("wta_infer").set(false);
-	fc1.parameter<Tensor<float>>("w").distribution<distribution::Uniform>(0.0, 1.0);
-	fc1.parameter<Tensor<float>>("th").distribution<distribution::Gaussian>(10.0, 0.1);
-	fc1.parameter<STDP>("stdp").set<stdp::Biological>(w_lr, 0.1f);
-	"""
+	//fc1.parameter<uint32_t>("epoch").set(100);
+	//fc1.parameter<float>("annealing").set(0.95f);
+	//fc1.parameter<float>("min_th").set(1.0f);
+	//fc1.parameter<float>("t_obj").set(t_obj);
+	//fc1.parameter<float>("lr_th").set(th_lr);
+	//fc1.parameter<bool>("wta_infer").set(false);
+	//fc1.parameter<Tensor<float>>("w").distribution<distribution::Uniform>(0.0, 1.0);
+	//fc1.parameter<Tensor<float>>("th").distribution<distribution::Gaussian>(10.0, 0.1);
+	//fc1.parameter<STDP>("stdp").set<stdp::Biological>(w_lr, 0.1f);
+	
 
 #ifdef ENABLE_QT
 	conv1.plot_threshold(true);
