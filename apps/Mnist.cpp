@@ -71,6 +71,7 @@ int main(int argc, char** argv) {
 	auto& pool2 = experiment.push<layer::Pooling>(2, 2, 2, 2);
 	pool2.set_name("pool2");
 
+	"""
 	auto& fc1 = experiment.push<layer::Convolution>(4, 4, 4096);
 	fc1.set_name("fc1");
 	//fc1.parameter<Training>("training").set<std::Annealing>(100, 0.95f);
@@ -83,6 +84,7 @@ int main(int argc, char** argv) {
 	fc1.parameter<Tensor<float>>("w").distribution<distribution::Uniform>(0.0, 1.0);
 	fc1.parameter<Tensor<float>>("th").distribution<distribution::Gaussian>(10.0, 0.1);
 	fc1.parameter<STDP>("stdp").set<stdp::Biological>(w_lr, 0.1f);
+	"""
 
 #ifdef ENABLE_QT
 	conv1.plot_threshold(true);
@@ -103,11 +105,15 @@ int main(int argc, char** argv) {
 	conv2_out.add_analysis<analysis::Coherence>();
 	conv2_out.add_analysis<analysis::Svm>();
 
-	auto& fc1_out = experiment.output<TimeObjectiveOutput>(fc1, t_obj);
-	fc1_out.add_postprocessing<process::FeatureScaling>();
-	fc1_out.add_analysis<analysis::Activity>();
+	auto& pool2_out = experiment.output<TimeObjectiveOutput>(pool2, t_obj);
+	pool2_out.add_postprocessing<process::FeatureScaling>();
+	pool2_out.add_analysis<analysis::Svm>();
+
+	//auto& fc1_out = experiment.output<TimeObjectiveOutput>(fc1, t_obj);
+	//fc1_out.add_postprocessing<process::FeatureScaling>();
+	//fc1_out.add_analysis<analysis::Activity>();
 	//fc1_out.template add_analysis<analysis::Coherence>();
-	fc1_out.template add_analysis<analysis::Svm>();
+	//fc1_out.template add_analysis<analysis::Svm>();
 
 	experiment.run(10000);
 

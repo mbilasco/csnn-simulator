@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
 	conv1_out.add_postprocessing<process::FeatureScaling>();
 	//conv1_out.add_analysis<analysis::Activity>();
 	//conv1_out.add_analysis<analysis::Coherence>();
-	conv1_out.add_analysis<analysis::Svm>();
+	//conv1_out.add_analysis<analysis::Svm>();
 
 	auto& pool1_out = experiment.output<TimeObjectiveOutput>(pool1, t_obj);
 	//pool1_out.add_postprocessing<process::SumPooling>(2, 2);
