@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
 
 	std::string input_path(input_path_ptr);
 
-	experiment.template push<process::WhiteningPatches>(9, 0.01, 0.15, 2, 1000000);
+	experiment.template push<process::WhiteningPatches>(9, 0.001, 1, 2, 1000000);
 	//experiment.push<process::WhitenPatchesLoader>("whiten_filters");
 	//experiment.push<process::Whitening>(0.01, 1.0);
 	experiment.push<process::SeparateSign>();
@@ -68,17 +68,14 @@ int main(int argc, char** argv) {
 	pool1.set_name("pool1");
 
 	auto& conv1_out = experiment.output<TimeObjectiveOutput>(conv1, t_obj);
-	//conv1_out.add_postprocessing<process::SumPooling>(2, 2);
+	conv1_out.add_postprocessing<process::SumPooling>(2, 2);
 	conv1_out.add_postprocessing<process::FeatureScaling>();
 	//conv1_out.add_analysis<analysis::Activity>();
 	//conv1_out.add_analysis<analysis::Coherence>();
-	//conv1_out.add_analysis<analysis::Svm>();
+	conv1_out.add_analysis<analysis::Svm>();
 
 	auto& pool1_out = experiment.output<TimeObjectiveOutput>(pool1, t_obj);
-	//pool1_out.add_postprocessing<process::SumPooling>(2, 2);
 	pool1_out.add_postprocessing<process::FeatureScaling>();
-	//pool1_out.add_analysis<analysis::Activity>();
-	//pool1_out.add_analysis<analysis::Coherence>();
 	pool1_out.add_analysis<analysis::Svm>();
 
 #ifdef ENABLE_QT

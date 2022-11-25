@@ -23,6 +23,14 @@ void SparseIntermediateExecution::process(size_t refresh_interval) {
 
 		_process_train_data(_experiment.process_at(i), _train_set, refresh_interval);
 		_process_test_data(_experiment.process_at(i), _test_set);
+		// Save output of the last process
+		if (i+1 == _experiment.process_number()) {
+			// TEMPORARY
+			// Find a way to add a postprocessing before the output conversion
+			// Save train and test sets into files
+			_SavePairVector("layer_" + _experiment.process_at(i).class_name() + "_train.json", _train_set);
+			_SavePairVector("layer_" + _experiment.process_at(i).class_name() + "_test.json", _test_set);
+		}
 		_process_output(i);
 	}
 
@@ -112,14 +120,6 @@ void SparseIntermediateExecution::_process_test_data(AbstractProcess& process, s
 }
 
 void SparseIntermediateExecution::_process_output(size_t index) {
-
-	// TEMPORARY
-	// Find a way to add a postprocessing before the output conversion
-	// Save train and test sets into files
-	if (index > 2) { //Hardcoded, need to find a robust solution
-		_SavePairVector("layer_" + std::to_string(index) + "_train.json", _train_set);
-		_SavePairVector("layer_" + std::to_string(index) + "_test.json", _test_set);
-	}
 
 	for(size_t i=0; i<_experiment.output_count(); i++) {
 		if(_experiment.output_at(i).index() == index) {
