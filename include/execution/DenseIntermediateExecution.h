@@ -3,6 +3,8 @@
 
 #include "Experiment.h"
 #include "SpikeConverter.h"
+#include "dep/ArduinoJson-v6.17.3.h"
+
 
 class DenseIntermediateExecution {
 
