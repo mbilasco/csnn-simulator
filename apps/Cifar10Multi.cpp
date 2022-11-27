@@ -65,12 +65,12 @@ int main(int argc, char** argv) {
 	auto& pool1 = experiment.push<layer::Pooling>(2, 2, 2, 2);
 	pool1.set_name("pool1");
 
-	experiment.push<DefaultOutput>(0.0, 1.0);
-	experiment.push<process::WhiteningPatches>(5, 0.01, 1.0, 2, 100000);
+	//experiment.push<DefaultOutput>(0.0, 1.0);
+	//experiment.push<process::WhiteningPatches>(5, 0.01, 1.0, 2, 100000);
 	//experiment.push<process::Whitening>(0.01, 1.0, 1000);
-	experiment.push<LatencyCoding>();
+	//experiment.push<LatencyCoding>();
 
-	auto& conv2 = experiment.push<layer::Convolution>(5, 5, 512);
+	auto& conv2 = experiment.push<layer::Convolution>(5, 5, 128);
 	conv2.set_name("conv2");
 	conv2.parameter<uint32_t>("epoch").set(100);
 	conv2.parameter<float>("annealing").set(0.95f);
@@ -81,12 +81,17 @@ int main(int argc, char** argv) {
 	conv2.parameter<Tensor<float>>("th").distribution<distribution::Gaussian>(10.0, 0.1);
 	conv2.parameter<STDP>("stdp").set<stdp::Multiplicative>(w_lr, 1.0);
 
-	auto& conv2_out = experiment.output<DefaultOutput>(conv2, 0.0, 1.0);
-	conv2_out.add_postprocessing<process::SumPooling>(2, 2);
-	conv2_out.add_postprocessing<process::FeatureScaling>();
-	conv2_out.add_analysis<analysis::Activity>();
-	conv2_out.add_analysis<analysis::Coherence>();
+	auto& pool2 = experiment.push<layer::Pooling>(2, 2, 2, 2);
+	pool2.set_name("pool2");
+
+
+	auto& pool2_out = experiment.output<DefaultOutput>(pool2, 0.0, 1.0);
+	//conv2_out.add_postprocessing<process::SumPooling>(2, 2);
+	//conv2_out.add_postprocessing<process::FeatureScaling>();
+	//conv2_out.add_analysis<analysis::Activity>();
+	//conv2_out.add_analysis<analysis::Coherence>();
 	conv2_out.add_analysis<analysis::Svm>();
+
 
 #ifdef ENABLE_QT
 	conv1.plot_threshold(true);
