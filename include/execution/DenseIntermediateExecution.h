@@ -25,6 +25,8 @@ private:
 	void _process_test_data(AbstractProcess& process, std::vector<std::pair<std::string, Tensor<float>>>& data);
 	void _process_output(size_t index);
 
+	void _SavePairVector(std::string fileName, std::vector<std::pair<std::string, Tensor<float>>> set);
+
 	ExperimentType& _experiment;
 
 	std::vector<std::pair<std::string, Tensor<float>>> _train_set;
