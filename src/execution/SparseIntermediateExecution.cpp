@@ -28,8 +28,8 @@ void SparseIntermediateExecution::process(size_t refresh_interval) {
 			// TEMPORARY
 			// Find a way to add a postprocessing before the output conversion
 			// Save train and test sets into files
-			_SavePairVector(_experiment.process_at(i).class_name() + "_train.json", _train_set);
-			_SavePairVector(_experiment.process_at(i).class_name() + "_test.json", _test_set);
+			_SavePairVector(_experiment.process_at(i).class_name() + "_" + std::to_string(i) + "_train.json", _train_set);
+			_SavePairVector(_experiment.process_at(i).class_name() + "_" + std::to_string(i) + "_test.json", _test_set);
 		}
 		_process_output(i);
 	}

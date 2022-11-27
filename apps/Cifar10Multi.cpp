@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
 	//conv2_out.add_postprocessing<process::FeatureScaling>();
 	//conv2_out.add_analysis<analysis::Activity>();
 	//conv2_out.add_analysis<analysis::Coherence>();
-	conv2_out.add_analysis<analysis::Svm>();
+	pool2_out.add_analysis<analysis::Svm>();
 
 
 #ifdef ENABLE_QT
