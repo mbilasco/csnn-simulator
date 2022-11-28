@@ -25,9 +25,10 @@ int main(int argc, char** argv) {
 
 	std::string input_path(input_path_ptr);
 
-	experiment.add_preprocessing<process::DefaultOnOffFilter>(7, 1.0, 2.0);
-	experiment.add_preprocessing<process::FeatureScaling>();
-	experiment.input<LatencyCoding>();
+	experiment.push<process::GrayScale>();
+	experiment.push<process::DefaultOnOffFilter>(7, 1.0, 2.0);
+	experiment.push<process::FeatureScaling>();
+	experiment.push<LatencyCoding>();
 
 	experiment.add_train<dataset::Cifar>(std::vector<std::string>({
 		input_path+"data_batch_1.bin",
@@ -45,7 +46,9 @@ int main(int argc, char** argv) {
 	float th_lr = 0.001f;
 	float w_lr = 0.001f;
 
-	auto& conv1 = experiment.push_layer<layer::Convolution>("conv1", 5, 5, 64);
+	auto& conv1 = experiment.push<layer::Convolution>(5, 5, 64);
+    conv1.set_name("conv1");
+    conv1.parameter<uint32_t>("epoch").set(100);
 	conv1.parameter<float>("annealing").set(0.95f);
 	conv1.parameter<float>("min_th").set(4.0f);
 	conv1.parameter<float>("t_obj").set(t_obj);
@@ -53,8 +56,6 @@ int main(int argc, char** argv) {
 	conv1.parameter<Tensor<float>>("w").distribution<distribution::Uniform>(0.0, 1.0);
 	conv1.parameter<Tensor<float>>("th").distribution<distribution::Gaussian>(20.0, 0.01);
 	conv1.parameter<STDP>("stdp").set<stdp::Multiplicative>(w_lr, 1);
-
-	experiment.add_train_step(conv1, 100);
 
 	auto& conv1_out = experiment.output<DefaultOutput>(conv1, t_obj);
 	conv1_out.add_postprocessing<process::SumPooling>(2, 2);
