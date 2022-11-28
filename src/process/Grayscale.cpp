@@ -33,7 +33,7 @@ void GrayScale::_process(Tensor<float>& in) const {
 		for(size_t y=0; y<_height; y++) {
 			float v = 0;
             for(size_t z=0; z<in.dim(2); z++) {
-                v += in.at(x,y,z) * in.at(x,y,z)
+                v += in.at(x,y,z) * in.at(x,y,z);
 			}
             out.at(x, y, z) = sqrt(v / 3);
 		}
