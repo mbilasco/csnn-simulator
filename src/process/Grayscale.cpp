@@ -1,31 +1,31 @@
-#include "process/Grayscale.h"
+#include "process/GrayScale.h"
 
 using namespace process;
 
-static RegisterClassParameter<Grayscale, ProcessFactory> _register("Grayscale");
+static RegisterClassParameter<GrayScale, ProcessFactory> _register("GrayScale");
 
 
-Grayscale::Grayscale() : UniquePassProcess(_register),
+GrayScale::GrayScale() : UniquePassProcess(_register),
 	_width(0), _height(0), _depth(0) {
 
 }
 
-Shape Grayscale::compute_shape(const Shape& shape) {
+Shape GrayScale::compute_shape(const Shape& shape) {
 	_width = shape.dim(0);
 	_height = shape.dim(1);
 	_depth = 1;
 	return Shape({_width, _height, _depth});
 }
 
-void Grayscale::process_train(const std::string&, Tensor<float>& sample) {
+void GrayScale::process_train(const std::string&, Tensor<float>& sample) {
 	_process(sample);
 }
 
-void Grayscale::process_test(const std::string&, Tensor<float>& sample) {
+void GrayScale::process_test(const std::string&, Tensor<float>& sample) {
 	_process(sample);
 }
 
-void Grayscale::_process(Tensor<float>& in) const {
+void GrayScale::_process(Tensor<float>& in) const {
 
 	Tensor<float> out(Shape({_width, _height, _depth}));
 

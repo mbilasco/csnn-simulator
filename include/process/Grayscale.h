@@ -5,10 +5,10 @@
 #include <cmath>
 
 namespace process {
-	class Grayscale : public UniquePassProcess {
+	class GrayScale : public UniquePassProcess {
 
 	public:
-		Grayscale();
+		GrayScale();
 
 		virtual Shape compute_shape(const Shape& shape);
 		virtual void process_train(const std::string& label, Tensor<float>& sample);
