@@ -2,10 +2,10 @@
 
 using namespace process;
 
-static RegisterClassParameter<GrayScale, ProcessFactory> _register_1("GrayScale");
+static RegisterClassParameter<GrayScale, ProcessFactory> _register("GrayScale");
 
 
-GrayScale::GrayScale() : UniquePassProcess(_register_1),
+GrayScale::GrayScale() : UniquePassProcess(_register),
 	_width(0), _height(0), _depth(0) {
 
 }

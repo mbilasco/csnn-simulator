@@ -11,6 +11,7 @@
 #include "analysis/Activity.h"
 #include "analysis/Coherence.h"
 #include "process/Input.h"
+#include "process/GrayScale.h"
 #include "process/Scaling.h"
 #include "process/Pooling.h"
 #include "process/OnOffFilter.h"
