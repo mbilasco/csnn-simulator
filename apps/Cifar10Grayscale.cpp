@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
 	conv1.parameter<Tensor<float>>("th").distribution<distribution::Gaussian>(20.0, 0.01);
 	conv1.parameter<STDP>("stdp").set<stdp::Multiplicative>(w_lr, 1);
 
-	auto& conv1_out = experiment.output<DefaultOutput>(conv1, t_obj);
+	auto& conv1_out = experiment.output<DefaultOutput>(conv1, 0.0, 1.0);
 	conv1_out.add_postprocessing<process::SumPooling>(2, 2);
 	conv1_out.add_postprocessing<process::FeatureScaling>();
 	conv1_out.add_analysis<analysis::Activity>();
