@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
 	auto& pool2 = experiment.push<layer::Pooling>(2, 2, 2, 2);
 	pool2.set_name("pool2");
 
-	auto& pool2_out = experiment.output<TimeObjectiveOutput>(pool2, 0.0, 1.0);
+	auto& pool2_out = experiment.output<DefaultOutput>(pool2, 0.0, 1.0);
 	//conv2_out.add_postprocessing<process::SumPooling>(2, 2);
 	//conv2_out.add_postprocessing<process::FeatureScaling>();
 	//conv2_out.add_analysis<analysis::Activity>();
