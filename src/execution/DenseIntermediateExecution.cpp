@@ -24,7 +24,7 @@ void DenseIntermediateExecution::process(size_t refresh_interval) {
 		_process_train_data(_experiment.process_at(i), _train_set, refresh_interval);
 		_process_test_data(_experiment.process_at(i), _test_set);
 		// Save output of the last process
-		if (false)//(i+1 == _experiment.process_number()) {
+		if (false) {//(i+1 == _experiment.process_number()) {
 			// TEMPORARY
 			// Find a way to add a postprocessing before the output conversion
 			// Save train and test sets into files
