@@ -86,13 +86,8 @@ class SpikeTiming : public OutputConverter {
 
 public:
 	SpikeTiming();
-	SpikeTiming(Time end);
 
 	virtual Tensor<float> process(const Tensor<float>& in);
-
-private:
-	Time _end;
-
 };
 
 

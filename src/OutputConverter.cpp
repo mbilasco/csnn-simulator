@@ -147,13 +147,8 @@ Tensor<float> WTAOutput::process(const Tensor<Time>& in) {
 
 static RegisterClassParameter<SpikeTiming, OutputConverterFactory> _register_6("SpikeTiming");
 
-SpikeTiming::SpikeTiming() : OutputConverter(_register_6), _end(1) {
-	parameter<float>("end").set(_end);
-}
+SpikeTiming::SpikeTiming() : OutputConverter(_register_6) {
 
-
-SpikeTiming::SpikeTiming(Time end) : SpikeTiming() {
-	parameter<float>("end").set(end);
 }
 
 Tensor<float> SpikeTiming::process(const Tensor<Time>& in) {
