@@ -1,4 +1,4 @@
-#include "analysis/SaveOutputJsonJson.h"
+#include "analysis/SaveOutputJson.h"
 
 using namespace analysis;
 
@@ -9,9 +9,8 @@ SaveOutputJson::SaveOutputJson() : UniquePassAnalysis(_register),
 	throw std::runtime_error("Unimplemented");
 }
 
-SaveOutputJson::SaveOutputJson(const std::string& train_filename, const std::string& test_filename) :
-	UniquePassAnalysis(_register),
-	_train_filename(train_filename), _test_filename(test_filename) _json_train_file(nullptr), _json_test_file(nullptr) {
+SaveOutputJson::SaveOutputJson(const std::string& train_filename, const std::string& test_filename) : UniquePassAnalysis(_register),
+	_train_filename(train_filename), _test_filename(test_filename), _json_train_file(nullptr), _json_test_file(nullptr) {
 
 }
 
@@ -26,7 +25,7 @@ void SaveOutputJson::before_train() {
 
 void SaveOutputJson::process_train(const std::string& label, const Tensor<float>& sample) {
 	// Convert samlple to JSON string
-	JSON_output = _to_json_string(label, sample);
+	std::string JSON_output = _to_json_string(label, sample);
 	// Append to the file
 	*_json_train_file << JSON_output;
 	*_json_train_file << ",";
@@ -46,7 +45,7 @@ void SaveOutputJson::before_test() {
 
 void SaveOutputJson::process_test(const std::string& label, const Tensor<float>& sample) {
 	// Convert samlple to JSON string
-	JSON_output = _to_json_string(label, sample);
+	std::string JSON_output = _to_json_string(label, sample);
 	// Append to the file
 	*_json_test_file << JSON_output;
 	*_json_test_file << ",";
@@ -90,5 +89,7 @@ std::string SaveOutputJson::_to_json_string(const std::string& label, const Tens
 	}
 
 	// Transform to string
-	return serializeJson(doc, JSON_output);
+	serializeJson(doc, JSON_output);
+
+	return JSON_output;
 }

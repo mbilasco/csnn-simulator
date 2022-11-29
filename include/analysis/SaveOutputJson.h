@@ -11,7 +11,7 @@ namespace analysis {
 
 	public:
 		SaveOutputJson();
-		SaveOutputJson(const std::string& train_filename, const std::string& test_filename, bool sparse);
+		SaveOutputJson(const std::string& train_filename, const std::string& test_filename);
 		SaveOutputJson(const SaveOutputJson& that) = delete;
 		SaveOutputJson& operator=(const SaveOutputJson& that) = delete;
 
