@@ -62,9 +62,6 @@ void SaveOutputJson::after_test() {
 std::string SaveOutputJson::_to_json_string(const std::string& label, const Tensor<float>& sample) {
     std::string JSON_output = "";
 
-	for (int i=0; i < 64; ++i)
-		if (sample.at(1,1,i) != INFINITE_TIME) 
-			std::cout << sample.at(1,1,i) << std::endl;
 	// Convert tensor of spike times into vector of spikes
 	std::vector<Spike> spks;
 	SpikeConverter::to_spike(sample, spks);

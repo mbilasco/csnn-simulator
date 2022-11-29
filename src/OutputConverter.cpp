@@ -140,3 +140,30 @@ Tensor<float> WTAOutput::process(const Tensor<Time>& in) {
 
 	return out;
 }
+
+//
+//	SpikeTiming
+//
+
+static RegisterClassParameter<SpikeTiming, OutputConverterFactory> _register_6("SpikeTiming");
+
+SpikeTiming::SpikeTiming() : OutputConverter(_register_6), _end(1) {
+	parameter<float>("end").set(_end);
+}
+
+
+SpikeTiming::SpikeTiming(Time end) : SpikeTiming() {
+	parameter<float>("end").set(end);
+}
+
+Tensor<float> SpikeTiming::process(const Tensor<Time>& in) {
+	Tensor<float> out(in.shape());
+
+	size_t size = in.shape().product();
+	for(size_t i=0; i<size; i++) {
+		Time t = in.at_index(i);
+		out.at_index(i) = t == INFINITE_TIME ? 1.0 : out.at_index(i);
+	}
+
+	return out;
+}
