@@ -8,7 +8,7 @@
 #include "execution/DenseIntermediateExecution.h"
 #include "analysis/Svm.h"
 #include "analysis/SaveOutput.h"
-#include "analysis/SaveOutputJsonJson.h"
+#include "analysis/SaveOutputJson.h"
 #include "analysis/Activity.h"
 #include "analysis/Coherence.h"
 #include "process/Input.h"

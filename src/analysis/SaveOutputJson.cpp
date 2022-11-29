@@ -5,12 +5,12 @@ using namespace analysis;
 static RegisterClassParameter<SaveOutputJson, AnalysisFactory> _register("SaveOutputJson");
 
 SaveOutputJson::SaveOutputJson() : UniquePassAnalysis(_register),
-	_train_filename(), _test_filename(), _json_train_file(nullptr), _json_test_file(nullptr) {
+	_train_filename(), _test_filename(), _json_train_file(), _json_test_file() {
 	throw std::runtime_error("Unimplemented");
 }
 
 SaveOutputJson::SaveOutputJson(const std::string& train_filename, const std::string& test_filename) : UniquePassAnalysis(_register),
-	_train_filename(train_filename), _test_filename(test_filename), _json_train_file(nullptr), _json_test_file(nullptr) {
+	_train_filename(train_filename), _test_filename(test_filename), _json_train_file(), _json_test_file() {
 
 }
 
