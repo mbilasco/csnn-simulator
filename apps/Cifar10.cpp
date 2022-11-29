@@ -30,8 +30,6 @@ int main(int argc, char** argv) {
 	std::string input_path(input_path_ptr);
 
 	experiment.template push<process::WhiteningPatches>(9, 0.001, 1, 2, 1000000);
-	//experiment.push<process::WhitenPatchesLoader>("whiten_filters");
-	//experiment.push<process::Whitening>(0.01, 1.0);
 	experiment.push<process::SeparateSign>();
 	experiment.push<process::SampleScaling>();
 	experiment.push<LatencyCoding>();

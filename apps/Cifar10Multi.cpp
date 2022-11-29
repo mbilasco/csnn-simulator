@@ -30,13 +30,9 @@ int main(int argc, char** argv) {
 
 	std::string input_path(input_path_ptr);
 
-	//experiment.push<process::WhiteningPatches>(5, 0.01, 1.0, 2, 100000);
-	//experiment.push<process::Whitening>(0.01, 1.0, 1000);
-	//experiment.push<process::SeparateSign>();
-	//experiment.push<process::SampleScaling>();
-	experiment.push<process::GrayScale>();
-	experiment.push<process::DefaultOnOffFilter>(7, 1.0, 4.0);
-	experiment.push<process::FeatureScaling>();
+	experiment.push<process::WhiteningPatches>(5, 0.01, 1.0, 2, 100000);
+	experiment.push<process::SeparateSign>();
+	experiment.push<process::SampleScaling>();
 	experiment.push<LatencyCoding>();
 
 	experiment.add_train<dataset::Cifar>(std::vector<std::string>({
@@ -70,11 +66,6 @@ int main(int argc, char** argv) {
 	auto& pool1 = experiment.push<layer::Pooling>(2, 2, 2, 2);
 	pool1.set_name("pool1");
 
-	//experiment.push<DefaultOutput>(0.0, 1.0);
-	//experiment.push<process::WhiteningPatches>(5, 0.01, 1.0, 2, 100000);
-	//experiment.push<process::Whitening>(0.01, 1.0, 1000);
-	//experiment.push<LatencyCoding>();
-
 	auto& conv2 = experiment.push<layer::Convolution>(5, 5, 128);
 	conv2.set_name("conv2");
 	conv2.parameter<uint32_t>("epoch").set(100);
@@ -91,10 +82,6 @@ int main(int argc, char** argv) {
 	pool2.set_name("pool2");
 
 	auto& pool2_out = experiment.output<DefaultOutput>(pool2, 0.0, 1.0);
-	//conv2_out.add_postprocessing<process::SumPooling>(2, 2);
-	//conv2_out.add_postprocessing<process::FeatureScaling>();
-	//conv2_out.add_analysis<analysis::Activity>();
-	//conv2_out.add_analysis<analysis::Coherence>();
 	pool2_out.add_analysis<analysis::Svm>();
 
 
