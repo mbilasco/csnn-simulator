@@ -28,7 +28,6 @@ int main(int argc, char** argv) {
 
 	experiment.push<process::GrayScale>();
 	experiment.push<process::DefaultOnOffFilter>(7, 1.0, 2.0);
-	//experiment.push<process::BiologicalOnOffFilter>(7, 1.0, 2.0);
 	experiment.push<process::FeatureScaling>();
 	experiment.push<LatencyCoding>();
 
@@ -51,13 +50,13 @@ int main(int argc, char** argv) {
 	auto& conv1 = experiment.push<layer::Convolution>(5, 5, 64);
 	conv1.set_name("conv1");
 	conv1.parameter<uint32_t>("epoch").set(100);
-	//conv1.parameter<float>("annealing").set(0.95f); //default to 1
-	conv1.parameter<float>("min_th").set(0.0f); //default to 0
+	conv1.parameter<float>("annealing").set(1.0f); //not specified in the paper Pattern Recognition
+	conv1.parameter<float>("min_th").set(0.0f); //not specified in the paper Pattern Recognition
 	conv1.parameter<float>("t_obj").set(t_obj);
 	conv1.parameter<float>("lr_th").set(th_lr);
-	conv1.parameter<bool>("wta_infer").set(false); //not implemented in the public version
+	conv1.parameter<bool>("wta_infer").set(false); //not implemented in the public version + not specified in the paper Pattern Recognition
 	conv1.parameter<Tensor<float>>("w").distribution<distribution::Uniform>(0.0, 1.0);
-	conv1.parameter<Tensor<float>>("th").distribution<distribution::Gaussian>(20.0, 0.01);
+	conv1.parameter<Tensor<float>>("th").distribution<distribution::Gaussian>(2.0, 0.1); //not as in the paper Pattern Recognition
 	conv1.parameter<STDP>("stdp").set<stdp::Multiplicative>(w_lr, 1);
 
 	auto& conv1_out = experiment.output<DefaultOutput>(conv1, 0.0, 1.0);
