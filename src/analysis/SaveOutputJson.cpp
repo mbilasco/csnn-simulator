@@ -19,43 +19,43 @@ void SaveOutputJson::resize(const Shape&) {
 }
 
 void SaveOutputJson::before_train() {
-	_json_train_file = new std::ofstream(_train_filename, std::ios_base::app);
-	*_json_train_file << "[";
+	_json_train_file.open(_train_filename, std::ios_base::app);
+	_json_train_file << "[";
 }
 
 void SaveOutputJson::process_train(const std::string& label, const Tensor<float>& sample) {
 	// Convert samlple to JSON string
 	std::string JSON_output = _to_json_string(label, sample);
 	// Append to the file
-	*_json_train_file << JSON_output;
-	*_json_train_file << ",";
+	_json_train_file << JSON_output;
+	_json_train_file << ",";
 }
 
 void SaveOutputJson::after_train() {
-   * _json_train_file << "]";
-    _json_train_file->close();
-	delete _json_train_file;
-	_json_train_file = nullptr;
+	_json_train_file << "]";
+    _json_train_file.close();
+	//delete _json_train_file;
+	//_json_train_file = nullptr;
 }
 
 void SaveOutputJson::before_test() {
-	_json_test_file = new std::ofstream(_test_filename, std::ios_base::app);
-	*_json_test_file << "[";
+	_json_test_file.open(_test_filename, std::ios_base::app);
+	_json_test_file << "[";
 }
 
 void SaveOutputJson::process_test(const std::string& label, const Tensor<float>& sample) {
 	// Convert samlple to JSON string
 	std::string JSON_output = _to_json_string(label, sample);
 	// Append to the file
-	*_json_test_file << JSON_output;
-	*_json_test_file << ",";
+	_json_test_file << JSON_output;
+	_json_test_file << ",";
 }
 
 void SaveOutputJson::after_test() {
-   * _json_test_file << "]";
-    _json_test_file->close();
-	delete _json_test_file;
-	_json_test_file = nullptr;
+	_json_test_file << "]";
+    _json_test_file.close();
+	//delete _json_test_file;
+	//_json_test_file = nullptr;
 }
 
 std::string SaveOutputJson::_to_json_string(const std::string& label, const Tensor<float>& sample) {

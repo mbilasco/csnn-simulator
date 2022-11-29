@@ -1,6 +1,7 @@
 #ifndef _ANALYSIS_SAVE_OUTPUT_JSON_H
 #define _ANALYSIS_SAVE_OUTPUT_JSON_H
 
+#include <fstream>
 #include "Analysis.h"
 #include "SpikeConverter.h"
 #include "dep/ArduinoJson-v6.17.3.h"
@@ -30,8 +31,8 @@ namespace analysis {
 	private:
 		std::string _train_filename;
 		std::string _test_filename;
-		std::ofstream* _json_train_file;
-		std::ofstream* _json_test_file;
+		std::ofstream _json_train_file;
+		std::ofstream _json_test_file;
 	};
 
 }
