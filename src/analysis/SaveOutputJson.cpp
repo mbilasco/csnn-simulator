@@ -1,4 +1,5 @@
 #include "analysis/SaveOutputJson.h"
+#include <iostream>
 
 using namespace analysis;
 
@@ -61,6 +62,7 @@ void SaveOutputJson::after_test() {
 std::string SaveOutputJson::_to_json_string(const std::string& label, const Tensor<float>& sample) {
     std::string JSON_output = "";
 
+	std::cout << sample.at(1,1,0) << std::endl;
 	// Convert tensor of spike times into vector of spikes
 	std::vector<Spike> spks;
 	SpikeConverter::to_spike(sample, spks);
