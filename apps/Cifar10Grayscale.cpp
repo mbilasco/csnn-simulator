@@ -7,6 +7,7 @@
 #include "Distribution.h"
 #include "execution/DenseIntermediateExecution.h"
 #include "analysis/Svm.h"
+#include "analysis/SaveOutput.h"
 #include "analysis/Activity.h"
 #include "analysis/Coherence.h"
 #include "process/Input.h"
@@ -59,11 +60,15 @@ int main(int argc, char** argv) {
 	conv1.parameter<Tensor<float>>("th").distribution<distribution::Gaussian>(2.0, 0.1); //not as in the paper Pattern Recognition
 	conv1.parameter<STDP>("stdp").set<stdp::Multiplicative>(w_lr, 1);
 
+	// Save output
+	auto& conv1_save = experiment.output<NoOutputConversion>(conv1);
+	conv1_save.add_postprocessing<process::SumPooling>(2, 2);
+	conv1_save.add_analysis<analysis::SaveOutput>();
+
+	// Output analysis
 	auto& conv1_out = experiment.output<DefaultOutput>(conv1, 0.0, 1.0);
 	conv1_out.add_postprocessing<process::SumPooling>(2, 2);
 	conv1_out.add_postprocessing<process::FeatureScaling>();
-	//conv1_out.add_analysis<analysis::Activity>();
-	//conv1_out.add_analysis<analysis::Coherence>();
 	conv1_out.add_analysis<analysis::Svm>();
 
 #ifdef ENABLE_QT
