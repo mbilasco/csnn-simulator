@@ -8,6 +8,7 @@
 #include "execution/DenseIntermediateExecution.h"
 #include "analysis/Svm.h"
 #include "analysis/SaveOutput.h"
+#include "analysis/SaveOutputJsonJson.h"
 #include "analysis/Activity.h"
 #include "analysis/Coherence.h"
 #include "process/Input.h"
@@ -63,7 +64,7 @@ int main(int argc, char** argv) {
 	// Save output
 	auto& conv1_save = experiment.output<NoOutputConversion>(conv1);
 	conv1_save.add_postprocessing<process::SumPooling>(2, 2);
-	conv1_save.add_analysis<analysis::SaveOutput>("cifar10_output_train", "cifar10_output_test", true);
+	conv1_save.add_analysis<analysis::SaveOutputJsonJson>("cifar10_output_train.json", "cifar10_output_test.json");
 
 	// Output analysis
 	auto& conv1_out = experiment.output<DefaultOutput>(conv1, 0.0, 1.0);
