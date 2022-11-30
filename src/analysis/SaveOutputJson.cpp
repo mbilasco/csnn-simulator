@@ -75,12 +75,13 @@ std::string SaveOutputJson::_to_json_string(const std::string& label, const Tens
     std::string JSON_output = "";
 
 	// Convert tensor of spike times into vector of spikes
-	std::vector<Spike> spks;
-	SpikeConverter::to_spike(sample, spks);
+	//std::vector<Spike> spks;
+	//SpikeConverter::to_spike(sample, spks);
 
 	// Create a JSON document that holds the memory of the sample to serialize
 	// 4 bytes for the label + 4 bytes * 4 (for x,y,z,time vars) * n_spks
-	DynamicJsonDocument doc(JSON_OBJECT_SIZE(4 + 4 * 4 * spks.size()));
+	//DynamicJsonDocument doc(JSON_OBJECT_SIZE(4 + 4 * 4 * spks.size()));
+	DynamicJsonDocument doc(JSON_OBJECT_SIZE(4 + 4 * 4 * sample.size().product()));
 
 	// Create the main object
 	JsonObject root = doc.to<JsonObject>();
@@ -92,17 +93,21 @@ std::string SaveOutputJson::_to_json_string(const std::string& label, const Tens
 	JsonArray spks_arr = root.createNestedArray("data");
 
 	// Filling it with spike objects
-	for(Spike spk : spks)
-	{
-		if (spks.size() == 239) {
-			std::cout << spk.time << std::endl;
-		}
-		if (spk.time != NULL) {
-			JsonObject spk_obj = spks_arr.createNestedObject();
-			spk_obj["x"] = spk.x;
-			spk_obj["y"] = spk.y;
-			spk_obj["z"] = spk.z;
-			spk_obj["time"] = spk.time;
+	//for(Spike spk : spks)
+	size_t width = sample.shape().dim(0);
+	size_t height = sample.shape().dim(1);
+	size_t depth = sample.shape().dim(2);
+
+	for(size_t x=0; x<width; x++) {
+		for(size_t y=0; y<height; y++) {
+			for(size_t z=0; z<depth; z++) {
+				Time t = sample.at(x, y, z);
+				JsonObject spk_obj = spks_arr.createNestedObject();
+				spk_obj["x"] = x;
+				spk_obj["y"] = y;
+				spk_obj["z"] = z;
+				spk_obj["time"] = t;
+			}
 		}
 	}
 
