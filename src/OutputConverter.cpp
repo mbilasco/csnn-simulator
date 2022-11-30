@@ -160,7 +160,7 @@ Tensor<float> SpikeTiming::process(const Tensor<Time>& in) {
 		Time t = in.at_index(i);
 		Time tt = t == INFINITE_TIME ? 1.0 : t;
 		out.at_index(i) = tt;
-		if !(tt >= 0.0 && tt <= 1.0) { 
+		if (!(tt >= 0.0 && tt <= 1.0)) { 
 			std::cout << tt << std::endl;
 		}
 	}
