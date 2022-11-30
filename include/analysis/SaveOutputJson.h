@@ -33,6 +33,8 @@ namespace analysis {
 		std::string _test_filename;
 		std::ofstream _json_train_file;
 		std::ofstream _json_test_file;
+		bool _first_train_sample; // used to write comma between samples
+		bool _first_test_sample; // used to write comma between samples
 	};
 
 }

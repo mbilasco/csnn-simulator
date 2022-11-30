@@ -1,17 +1,16 @@
 #include "analysis/SaveOutputJson.h"
-#include <iostream>
 
 using namespace analysis;
 
 static RegisterClassParameter<SaveOutputJson, AnalysisFactory> _register("SaveOutputJson");
 
 SaveOutputJson::SaveOutputJson() : UniquePassAnalysis(_register),
-	_train_filename(), _test_filename(), _json_train_file(), _json_test_file() {
+	_train_filename(), _test_filename(), _json_train_file(), _json_test_file(), _first_train_sample(true), _first_test_sample(true) {
 	throw std::runtime_error("Unimplemented");
 }
 
 SaveOutputJson::SaveOutputJson(const std::string& train_filename, const std::string& test_filename) : UniquePassAnalysis(_register),
-	_train_filename(train_filename), _test_filename(test_filename), _json_train_file(), _json_test_file() {
+	_train_filename(train_filename), _test_filename(test_filename), _json_train_file(), _json_test_file(), _first_train_sample(true), _first_test_sample(true) {
 
 }
 
@@ -22,30 +21,45 @@ void SaveOutputJson::resize(const Shape&) {
 void SaveOutputJson::before_train() {
 	_json_train_file.open(_train_filename, std::ios_base::app);
 	_json_train_file << "[";
+	_first_train_sample = true;
 }
 
 void SaveOutputJson::process_train(const std::string& label, const Tensor<float>& sample) {
-	// Convert samlple to JSON string
+	// Add comma before writting the next sample
+	// Except when we process the first sample
+	if (!_first_train_sample) {
+		_json_train_file << ",";
+	}
+	else {
+		_first_train_sample = false;
+	}
+	// Convert sample to JSON string
 	std::string JSON_output = _to_json_string(label, sample);
 	// Append to the file
 	_json_train_file << JSON_output;
-	_json_train_file << ",";
 }
 
 void SaveOutputJson::after_train() {
 	_json_train_file << "]";
     _json_train_file.close();
-	//delete _json_train_file;
-	//_json_train_file = nullptr;
 }
 
 void SaveOutputJson::before_test() {
 	_json_test_file.open(_test_filename, std::ios_base::app);
 	_json_test_file << "[";
+	_first_test_sample = true;
 }
 
 void SaveOutputJson::process_test(const std::string& label, const Tensor<float>& sample) {
-	// Convert samlple to JSON string
+	// Add comma before writting the next sample
+	// Except when we process the first sample
+	if (!_first_test_sample) {
+		_json_test_file << ",";
+	}
+	else {
+		_first_test_sample = false;
+	}
+	// Convert sample to JSON string
 	std::string JSON_output = _to_json_string(label, sample);
 	// Append to the file
 	_json_test_file << JSON_output;
@@ -55,8 +69,6 @@ void SaveOutputJson::process_test(const std::string& label, const Tensor<float>&
 void SaveOutputJson::after_test() {
 	_json_test_file << "]";
     _json_test_file.close();
-	//delete _json_test_file;
-	//_json_test_file = nullptr;
 }
 
 std::string SaveOutputJson::_to_json_string(const std::string& label, const Tensor<float>& sample) {
