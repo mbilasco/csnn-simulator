@@ -1,7 +1,6 @@
 #include "analysis/SaveOutputJson.h"
 
 using namespace analysis;
-#include <iostream>
 
 static RegisterClassParameter<SaveOutputJson, AnalysisFactory> _register("SaveOutputJson");
 
@@ -101,9 +100,6 @@ std::string SaveOutputJson::_to_json_string(const std::string& label, const Tens
 			spk_obj["y"] = spk.y;
 			spk_obj["z"] = spk.z;
 			spk_obj["time"] = spk.time;
-		}
-		else {
-			std::cout << "No spike" << std::endl;
 		}
 	}
 
