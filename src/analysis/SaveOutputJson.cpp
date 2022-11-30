@@ -81,7 +81,7 @@ std::string SaveOutputJson::_to_json_string(const std::string& label, const Tens
 	// Create a JSON document that holds the memory of the sample to serialize
 	// 4 bytes for the label + 4 bytes * 4 (for x,y,z,time vars) * n_spks
 	//DynamicJsonDocument doc(JSON_OBJECT_SIZE(4 + 4 * 4 * spks.size()));
-	DynamicJsonDocument doc(JSON_OBJECT_SIZE(4 + 4 * 4 * sample.size().product()));
+	DynamicJsonDocument doc(JSON_OBJECT_SIZE(4 + 4 * 4 * sample.shape().product()));
 
 	// Create the main object
 	JsonObject root = doc.to<JsonObject>();
