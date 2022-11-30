@@ -1,4 +1,5 @@
 #include "analysis/SaveOutputJson.h"
+#include <iostream>
 
 using namespace analysis;
 
@@ -63,7 +64,6 @@ void SaveOutputJson::process_test(const std::string& label, const Tensor<float>&
 	std::string JSON_output = _to_json_string(label, sample);
 	// Append to the file
 	_json_test_file << JSON_output;
-	_json_test_file << ",";
 }
 
 void SaveOutputJson::after_test() {
@@ -94,6 +94,9 @@ std::string SaveOutputJson::_to_json_string(const std::string& label, const Tens
 	// Filling it with spike objects
 	for(Spike spk : spks)
 	{
+		if (spks.size() == 239) {
+			std::cout << spk.time << std::endl;
+		}
 		if (spk.time != NULL) {
 			JsonObject spk_obj = spks_arr.createNestedObject();
 			spk_obj["x"] = spk.x;

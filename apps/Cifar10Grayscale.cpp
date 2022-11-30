@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
 	// Save output
 	auto& conv1_save = experiment.output<SpikeTiming>(conv1);
 	conv1_save.add_postprocessing<process::SumPooling>(2, 2);
-	conv1_save.add_analysis<analysis::SaveOutputJson>("cifar10_output_train.json", "cifar10_output_test.json");
+	conv1_save.add_analysis<analysis::SaveOutputJson>("sum_conv1_train.json", "sum_conv1_test.json");
 
 	// Output analysis
 	//auto& conv1_out = experiment.output<DefaultOutput>(conv1, 0.0, 1.0);
