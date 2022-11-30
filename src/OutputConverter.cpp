@@ -1,4 +1,5 @@
 #include "OutputConverter.h"
+#include <iostream>
 
 //
 //	OutputConverter
@@ -155,9 +156,15 @@ Tensor<float> SpikeTiming::process(const Tensor<Time>& in) {
 	Tensor<float> out(in.shape());
 
 	size_t size = in.shape().product();
+	if (size < 256) {
+		std::cout << size << std::endl;
+	}
 	for(size_t i=0; i<size; i++) {
 		Time t = in.at_index(i);
-		out.at_index(i) = t == INFINITE_TIME ? 1.0 : out.at_index(i);
+		Time tt = t == INFINITE_TIME ? 1.0 : t;
+		out.at_index(i) = tt;
+		//if (!(tt <= 1)) 
+		//	std::cout<< tt << std::endl;
 	}
 
 	return out;
