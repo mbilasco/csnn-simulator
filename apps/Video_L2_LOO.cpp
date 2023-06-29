@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 	size_t _filter_size = 5;
 
 	for (std::string subject : subjects)
-	for (int _repeat = 0; _repeat < 3; _repeat++)
+	//for (int _repeat = 0; _repeat < 3; _repeat++)
 	{
 		std::string _dataset = "IXMAS-j27-" + std::to_string(_filter_size) + "_2D1D_" + subject;
 

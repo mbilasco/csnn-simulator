@@ -640,7 +640,6 @@ void _priv::Convolution3DImpl::train(const std::string &label, const std::vector
 
 void _priv::Convolution3DImpl::train(const std::vector<Spike> &input_spike, const Tensor<Time> &input_time, std::vector<Spike> &output_spike)
 {
-	std::mutex _convolution_train_mutex; // mutex to aviod access violation durring multithreaded section
 	///////////////////////////////
 	std::string delimiter = ";.";
 	std::string _exp_name = _label.substr(0, _label.find(delimiter));
@@ -736,8 +735,8 @@ void _priv::Convolution3DImpl::test(const std::vector<Spike> &input_spike, const
 
 	std::mutex _convolution_test_mutex; // mutex to aviod access violation durring multithreaded section
 
-	// std::for_each(std::execution::par, input_spike.begin(), input_spike.end(), [&](const Spike &spike)
-	for (const Spike &spike : input_spike)
+	//for (const Spike &spike : input_spike)
+	std::for_each(std::execution::par, input_spike.begin(), input_spike.end(), [&](const Spike &spike)
 	{
 		std::vector<std::tuple<uint16_t, uint16_t, uint16_t, uint16_t, uint16_t, uint16_t>> output_spikes;
 		_model.forward(spike.x, spike.y, spike.k, output_spikes);
@@ -759,27 +758,26 @@ void _priv::Convolution3DImpl::test(const std::vector<Spike> &input_spike, const
 					continue;
 				}
 				// The rest of the neurons that have their inh flag set to false get their activations updated.
-				//_convolution_test_mutex.lock();
+				_convolution_test_mutex.lock();
 				_a.at(x, y, z, k) += w.at(w_x, w_y, spike.z, z, w_k);
-				//_convolution_test_mutex.unlock();
+				_convolution_test_mutex.unlock();
 				// If the activation crossed the threshould, the neuron has fired a spike, and it's _inh flag is set to true so that it doesn't fire again.
 				if (_a.at(x, y, z, k) >= th.at(z))
 				{
-					//_convolution_test_mutex.lock();
+					_convolution_test_mutex.lock();
 					output_spike.emplace_back(spike.time, x, y, z, k);
 					// The neuron that fires once is not allowed to fire again in this sample, so _inh is set to true.
+					
 					_inh.at(x, y, z, k) = true;
-					//_convolution_test_mutex.unlock();
+					_convolution_test_mutex.unlock();
 
 					/// @brief counting the spikes.
 					_model._spike_count++;
-					// std::cout << "\r[Spike count: " + std::to_string(_model._spike_count) + "]";
-					// std::cout.flush();
 				}
 			}
 		}
-	}
-	//});
+	// }
+	});
 	draw_progress(_model._sample_count, _model._sample_number);
 
 	if (_model._sample_count == _model._sample_number)
