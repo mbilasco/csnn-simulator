@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 
 	std::string _dataset = "IXMAS-"+std::to_string(start_time) + "_2D1D_" + subject + "_" +std::to_string(_filter_size) + "_"+ std::to_string(_repeat);
 
-	Experiment<SparseIntermediateExecution> experiment(argc, argv, _dataset);
+	Experiment<DenseIntermediateExecution> experiment(argc, argv, _dataset);
 
 	// The new dimentions of a video frame, set to zero if default dimentions are needed.
 	size_t _frame_size_width = 48, _frame_size_height = 64;
