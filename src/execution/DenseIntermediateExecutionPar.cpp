@@ -85,12 +85,15 @@ void DenseIntermediateExecutionPar::_process_train_data(AbstractProcess& process
 		}
 	}
 
-	std::vector<size_t> vj(data.size()) ; // vector with 100 ints.
+	std::vector<size_t> vj(data.size()) ;
 	std::iota (std::begin(vj), std::end(vj), 0);
 	std::for_each(std::execution::par, vj.begin(), vj.end(), [&]( size_t j ) {
 //	std::for_each(std::execution::par, data.begin(), data.end(), [&]( std::pair<std::string, Tensor<float>> _data) {
 //	for (size_t j=0; j < data.size(); j++) {
-		process.process_train_sample(data[j].first, data[j].second, n-1, j, data.size());
+		//process.process_train_sample(data[j].first, sample, n-1, j, data.size());
+		Tensor<float> sample=data[j].second;
+		process.process_test_sample(data[j].first, sample, j, data.size());
+		data[j].second=sample;
 //		process.process_train_sample(_data.first, _data.second, n-1, 0, data.size());
 
 //if(i == n-1 && data[j].second.shape() != process.shape()) {
@@ -113,7 +116,10 @@ void DenseIntermediateExecutionPar::_process_test_data(AbstractProcess& process,
 	std::for_each(std::execution::par, vj.begin(), vj.end(), [&]( size_t j ) {
 	//std::for_each(std::execution::par, data.begin(), data.end(), [&]( std::pair<std::string, Tensor<float>> _data) {
 //for(size_t j=0; j<_test_set.size(); j++) {
-		process.process_test_sample(data[j].first, data[j].second, j, data.size());
+		//process.process_test_sample(data[j].first, data[j].second, j, data.size());
+		Tensor<float> sample=data[j].second;
+		process.process_test_sample(data[j].first, sample, j, data.size());
+		data[j].second=sample;
 
 //		process.process_test_sample(_data.first, _data.second, 0, data.size());
 //		if(data[j].second.shape() != process.shape()) {
