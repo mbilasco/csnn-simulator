@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 	time_t start_time;
 	time(&start_time);
 
-	std::string _dataset = "IXMAS-"+std::to_string(start_time) + "_2D1D_" + subject + "_" +std::to_string(_filter_size) + "_"+ std::to_string(_repeat);
+	std::string _dataset = "IXMAS-"+std::to_string(start_time) + "_2DMP1D_" + subject + "_" +std::to_string(_filter_size) + "_"+ std::to_string(_repeat);
 
 	Experiment<DenseIntermediateExecution> experiment(argc, argv, _dataset);
 
