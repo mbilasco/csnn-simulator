@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 	size_t filter_number = 64;
 	size_t spacial_stride = 1, tmp_stride = 1;
 
-	size_t sampling_size = 800; //(_frame_size_height * _frame_size_width * _frame_per_video) / (filter_size * filter_size * tmp_filter_size); // size_t tmp_pooling_size = tmp_filter_size == 2 ? 2 : 1;
+	size_t sampling_size = _epoch; //(_frame_size_height * _frame_size_width * _frame_per_video) / (filter_size * filter_size * tmp_filter_size); // size_t tmp_pooling_size = tmp_filter_size == 2 ? 2 : 1;
 	const char *input_path_ptr = std::getenv("INPUT_PATH");
 	if (input_path_ptr == nullptr)
 	{
@@ -99,8 +99,8 @@ int main(int argc, char **argv)
 	conv1.parameter<Tensor<float>>("th").distribution<distribution::Gaussian>(8.0, 0.1);
 	conv1.parameter<STDP>("stdp").set<stdp::Biological>(w_lr, 0.1f);
 
-	// auto &pool1 = experiment.push<layer::Pooling3D>(2, 2, 1, 2, 2);
-	// pool1.set_name("pool1");
+	auto &pool1 = experiment.push<layer::Pooling3D>(2, 2, 1, 2, 2);
+	pool1.set_name("pool1");
 
 	// filter_width, filter_height, filter_depth, filter_number, model_path, stride_x, stride_y, stride_k, padding_x, padding_y, padding_k
 	auto &conv2 = experiment.push<layer::Convolution3D>(1, 1, tmp_filter_size, filter_number, "", 1, 1, tmp_stride);
