@@ -85,47 +85,54 @@ void DenseIntermediateExecutionPar::_process_train_data(AbstractProcess& process
 		}
 	}
 
-	std::vector<size_t> vj(data.size()) ;
-	std::iota (std::begin(vj), std::end(vj), 0);
-	std::for_each(std::execution::par, vj.begin(), vj.end(), [&]( size_t j ) {
-//	std::for_each(std::execution::par, data.begin(), data.end(), [&]( std::pair<std::string, Tensor<float>> _data) {
-//	for (size_t j=0; j < data.size(); j++) {
-		//process.process_train_sample(data[j].first, sample, n-1, j, data.size());
-		Tensor<float> sample=data[j].second;
-		process.process_test_sample(data[j].first, sample, j, data.size());
-		data[j].second=sample;
-//		process.process_train_sample(_data.first, _data.second, n-1, 0, data.size());
-
-//if(i == n-1 && data[j].second.shape() != process.shape()) {
-//		throw std::runtime_error("Unexpected shape (actual: "+data[j].second.shape().to_string()+", expected: "+process.shape().to_string()+")");
-//		}
-
-//		_experiment.tick(process.index(), i*data.size()+j);
-
-//		if((i*data.size()+j) % refresh_interval == 0) {
-//			_experiment.refresh(process.index());
-//		}
-
-	});
+	if (process.class_name().compare("Convolution3D")==0) {
+		_experiment.log()<<"Run parallelisation per instance "<<process.class_name()<<" "<<process.name()<<"\n";
+		
+		std::vector<size_t> vj(data.size()) ;
+		std::iota (std::begin(vj), std::end(vj), 0);
+		std::for_each(std::execution::seq, vj.begin(), vj.end(), [&]( size_t j ) {
+			//process.process_train_sample(data[j].first, data[j].second, n-1, j, data.size());
+			//process.process_test_sample(data[j].first, data[j].second, j, data.size());
+			Tensor<float> sample=data[j].second;
+			process.process_test_sample(data[j].first, sample, j, data.size());
+			data[j].second=sample;
+			});
+	} else {
+		for (size_t j=0; j < data.size(); j++) {
+			process.process_train_sample(data[j].first, data[j].second, n-1, j, data.size());
+			if(data[j].second.shape() != process.shape()) {
+				throw std::runtime_error("Unexpected shape (actual: "+data[j].second.shape().to_string()+", expected: "+process.shape().to_string()+")");
+			}
+			_experiment.tick(process.index(), (n-1)*data.size()+j);
+			if(((n-1)*data.size()+j) % refresh_interval == 0) {
+				_experiment.refresh(process.index());
+			}
+		}
+	};
 	
 }
 
 void DenseIntermediateExecutionPar::_process_test_data(AbstractProcess& process, std::vector<std::pair<std::string, Tensor<float>>>& data) {
-	std::vector<size_t> vj(data.size()) ; // vector with 100 ints.
-	std::iota (std::begin(vj), std::end(vj), 0);
-	std::for_each(std::execution::par, vj.begin(), vj.end(), [&]( size_t j ) {
+	if (process.class_name().compare("Convolution3D")==0) {
+		_experiment.log()<<"Run parallelisation per instance "<<process.class_name()<<" "<<process.name()<<"\n";
+		std::vector<size_t> vj(data.size()) ; // vector with 100 ints.
+		std::iota (std::begin(vj), std::end(vj), 0);
+		std::for_each(std::execution::seq, vj.begin(), vj.end(), [&]( size_t j ) {
 	//std::for_each(std::execution::par, data.begin(), data.end(), [&]( std::pair<std::string, Tensor<float>> _data) {
 //for(size_t j=0; j<_test_set.size(); j++) {
-		//process.process_test_sample(data[j].first, data[j].second, j, data.size());
-		Tensor<float> sample=data[j].second;
-		process.process_test_sample(data[j].first, sample, j, data.size());
-		data[j].second=sample;
-
-//		process.process_test_sample(_data.first, _data.second, 0, data.size());
-//		if(data[j].second.shape() != process.shape()) {
-//			throw std::runtime_error("Unexpected shape (actual: "+data[j].second.shape().to_string()+", expected: "+process.shape().to_string()+")");
-//		}
-	});
+//			process.process_test_sample(data[j].first, data[j].second, j, data.size());
+			Tensor<float> sample=data[j].second;
+			process.process_test_sample(data[j].first, sample, j, data.size());
+			data[j].second=sample;
+		});
+	} else {
+		for(size_t j=0; j<_test_set.size(); j++) {
+			process.process_test_sample(data[j].first, data[j].second, 0, data.size());
+			if(data[j].second.shape() != process.shape()) {
+				throw std::runtime_error("Unexpected shape (actual: "+data[j].second.shape().to_string()+", expected: "+process.shape().to_string()+")");
+			}
+		}
+	}
 }
 
 void DenseIntermediateExecutionPar::_process_output(size_t index) {
