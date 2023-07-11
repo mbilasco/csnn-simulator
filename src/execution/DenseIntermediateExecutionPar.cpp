@@ -90,7 +90,7 @@ void DenseIntermediateExecutionPar::_process_train_data(AbstractProcess& process
 		
 		std::vector<size_t> vj(data.size()) ;
 		std::iota (std::begin(vj), std::end(vj), 0);
-		std::for_each(std::execution::seq, vj.begin(), vj.end(), [&]( size_t j ) {
+		std::for_each(std::execution::par, vj.begin(), vj.end(), [&]( size_t j ) {
 			//process.process_train_sample(data[j].first, data[j].second, n-1, j, data.size());
 			//process.process_test_sample(data[j].first, data[j].second, j, data.size());
 			Tensor<float> sample=data[j].second;
