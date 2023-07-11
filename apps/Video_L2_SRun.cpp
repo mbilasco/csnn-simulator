@@ -35,11 +35,12 @@ int main(int argc, char **argv)
 	char *subject=argv[1];
 	size_t _filter_size=atoi(argv[2]);
 	int _repeat=atoi(argv[3]);
+	int _epochs=(argc>5)?atoi(argv[4]):800;
 
 	time_t start_time;
 	time(&start_time);
 
-	std::string _dataset = "IXMAS-"+std::to_string(start_time) + "_2D1D_" + subject + "_" +std::to_string(_filter_size) + "_"+ std::to_string(_repeat);
+	std::string _dataset = "IXMAS-"+std::to_string(start_time) + "_2D1D_" + subject + "_" +std::to_string(_filter_size) + "_"+ std::to_string(_repeat)+"_"+std::to_string(_epochs);
 
 	Experiment<DenseIntermediateExecutionPar> experiment(argc, argv, _dataset);
 
@@ -60,7 +61,7 @@ int main(int argc, char **argv)
 	size_t filter_number = 64;
 	size_t spacial_stride = 1, tmp_stride = 1;
 
-	size_t sampling_size = 800; //(_frame_size_height * _frame_size_width * _frame_per_video) / (filter_size * filter_size * tmp_filter_size); // size_t tmp_pooling_size = tmp_filter_size == 2 ? 2 : 1;
+	size_t sampling_size = _epochs; //(_frame_size_height * _frame_size_width * _frame_per_video) / (filter_size * filter_size * tmp_filter_size); // size_t tmp_pooling_size = tmp_filter_size == 2 ? 2 : 1;
 	const char *input_path_ptr = std::getenv("INPUT_PATH");
 	if (input_path_ptr == nullptr)
 	{
