@@ -117,7 +117,7 @@ void DenseIntermediateExecutionPar::_process_test_data(AbstractProcess& process,
 		_experiment.log()<<"Run parallelisation per instance "<<process.class_name()<<" "<<process.name()<<"\n";
 		std::vector<size_t> vj(data.size()) ; // vector with 100 ints.
 		std::iota (std::begin(vj), std::end(vj), 0);
-		std::for_each(std::execution::seq, vj.begin(), vj.end(), [&]( size_t j ) {
+		std::for_each(std::execution::par, vj.begin(), vj.end(), [&]( size_t j ) {
 	//std::for_each(std::execution::par, data.begin(), data.end(), [&]( std::pair<std::string, Tensor<float>> _data) {
 //for(size_t j=0; j<_test_set.size(); j++) {
 //			process.process_test_sample(data[j].first, data[j].second, j, data.size());

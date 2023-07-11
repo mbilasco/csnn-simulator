@@ -731,8 +731,8 @@ void _priv::Convolution3DImpl::test(const std::vector<Spike> &input_spike, const
 	Tensor<float> &w = _model._w;
 	Tensor<float> &th = _model._th;
 
-	Tensor<float> _a(Shape({_model.width(), _model.height(), _model.depth()}));
-	Tensor<float> _inh(Shape({_model.width(), _model.height(), _model.depth()}));
+	Tensor<float> _a(Shape({_model.width(), _model.height(), _model.depth(), _model.conv_depth()}));
+	Tensor<bool> _inh(Shape({_model.width(), _model.height(), _model.depth(), _model.conv_depth()}));
 
 
 	std::fill(std::begin(_a), std::end(_a), 0);
