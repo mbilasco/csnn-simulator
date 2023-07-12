@@ -36,11 +36,12 @@ int main(int argc, char **argv)
 	size_t _filter_size=atoi(argv[2]);
 	int _repeat=atoi(argv[3]);
 	int _epochs=(argc>5)?atoi(argv[4]):800;
+	float _th=(argc>6)?atoi(argv[5]):8.;
 
 	time_t start_time;
 	time(&start_time);
 
-	std::string _dataset = "IXMAS-"+std::to_string(start_time) + "_2D1D_" + subject + "_" +std::to_string(_filter_size) + "_"+ std::to_string(_repeat)+"_"+std::to_string(_epochs);
+	std::string _dataset = "IXMAS-"+std::to_string(start_time) + "_2D1D_" + subject + "_" +std::to_string(_filter_size) + "_"+ std::to_string(_repeat)+"_"+std::to_string(_epochs)+"_"+std::to_string(_th);
 
 	Experiment<DenseIntermediateExecutionPar> experiment(argc, argv, _dataset);
 
@@ -96,7 +97,7 @@ int main(int argc, char **argv)
 	conv1.parameter<float>("t_obj").set(t_obj);
 	conv1.parameter<float>("lr_th").set(th_lr);
 	conv1.parameter<Tensor<float>>("w").distribution<distribution::Uniform>(0.0, 1.0);
-	conv1.parameter<Tensor<float>>("th").distribution<distribution::Gaussian>(8.0, 0.1);
+	conv1.parameter<Tensor<float>>("th").distribution<distribution::Gaussian>(_th, 0.1);
 	conv1.parameter<STDP>("stdp").set<stdp::Biological>(w_lr, 0.1f);
 
 	// auto &pool1 = experiment.push<layer::Pooling3D>(2, 2, 1, 2, 2);
@@ -116,7 +117,7 @@ int main(int argc, char **argv)
 	conv2.parameter<float>("t_obj").set(t_obj);
 	conv2.parameter<float>("lr_th").set(th_lr);
 	conv2.parameter<Tensor<float>>("w").distribution<distribution::Uniform>(0.0, 1.0);
-	conv2.parameter<Tensor<float>>("th").distribution<distribution::Gaussian>(8.0, 0.1);
+	conv2.parameter<Tensor<float>>("th").distribution<distribution::Gaussian>(_th, 0.1);
 	conv2.parameter<STDP>("stdp").set<stdp::Biological>(w_lr, 0.1f);
 
 	auto &conv1_out = experiment.output<TimeObjectiveOutput>(conv1, t_obj);
