@@ -35,8 +35,8 @@ int main(int argc, char **argv)
 	char *subject=argv[1];
 	size_t _filter_size=atoi(argv[2]);
 	int _repeat=atoi(argv[3]);
-	int _epochs=(argc>5)?atoi(argv[4]):800;
-	float _th=(argc>6)?atoi(argv[5]):8.;
+	int _epochs=(argc>4)?atoi(argv[4]):800;
+	float _th=(argc>5)?atoi(argv[5]):8.;
 
 	time_t start_time;
 	time(&start_time);
