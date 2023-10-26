@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 	auto &conv1 = experiment.push<layer::Convolution>(ks, ks, fn); 
 	conv1.set_name("conv1");
 	conv1.parameter<bool>("draw").set(false);
-	conv1.parameter<bool>("save_weights").set(false);
+	conv1.parameter<bool>("save_weights").set(true);
 	conv1.parameter<bool>("inhibition").set(true);
 	conv1.parameter<uint32_t>("epoch").set(100);
 	conv1.parameter<float>("annealing").set(0.95f);

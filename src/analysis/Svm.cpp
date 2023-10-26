@@ -163,7 +163,7 @@ void Svm::process_test(const std::string &label, const Tensor<float> &sample)
 	}
 	
 
-	experiment().log() << "Predecred / Correct" << " (" << (y_pred) << "/" << it->second << ")" << std::endl;
+	//experiment().log() << "Predecred / Correct" << " (" << (y_pred) << "/" << it->second << ")" << std::endl;
 
 	_total_sample++;
 }
