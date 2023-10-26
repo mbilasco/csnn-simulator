@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 	int fn=argc>3?atoi(argv[2]):32;
 	float t_obj=argc>4?atoi(argv[3]):0.75;
 	
-	auto &conv1 = experiment.push<layer::Convolution>(ks, ks, nf); 
+	auto &conv1 = experiment.push<layer::Convolution>(ks, ks, fn); 
 	conv1.set_name("conv1");
 	conv1.parameter<bool>("draw").set(false);
 	conv1.parameter<bool>("save_weights").set(false);

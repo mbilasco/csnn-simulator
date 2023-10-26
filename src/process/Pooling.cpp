@@ -110,7 +110,7 @@ Shape SumPooling::compute_shape(const Shape &shape)
 	_width = shape.dim(0);
 	_height = shape.dim(1);
 	_depth = shape.dim(2);
-	_conv_depth = shape.dim(3);
+	_conv_depth = shape.number() > 3 ? shape.dim(3) : 1;
 
 	return Shape({std::min<size_t>(_target_width, _width),
 				  std::min<size_t>(_target_height, _height),
@@ -151,7 +151,7 @@ void SumPooling::_process(Tensor<float> &in) const
 					{
 						for (size_t fy = 0; fy < filter_height; fy++)
 						{
-							v += in.at(x * filter_width + fx, y * filter_height + fy, z, k);
+							v += in.shape().number() > 3 ? in.at(x * filter_width + fx, y * filter_height + fy, z, k) : in.at(x * filter_width + fx, y * filter_height + fy, z);
 						}
 					}
 
