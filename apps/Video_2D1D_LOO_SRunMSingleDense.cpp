@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 		//for (std::string subject : subjects)
 		{
 
-			std::string _dataset = "IXMAS_" + std::to_string(start_time) + "_2D1D_" + std::to_string(_filter_size) + "_" + std::to_string(_th)+"_"+subject + "_" + std::to_string(_rep) + "_" + std::to_string(_epochs);
+			std::string _dataset = "IXMAS_" + std::to_string(start_time) + "_2D1D_" + subject + "_" + std::to_string(_filter_size) + "_" + std::to_string(_th)+ "_" + std::to_string(_rep) + "_" + std::to_string(_epochs);
 
 			Experiment<DenseIntermediateExecution> experiment(argc, argv, _dataset);
 
