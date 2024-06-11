@@ -37,10 +37,10 @@ int main(int argc, char **argv)
 	size_t _filter_size = atoi(argv[2]);
 
 	int _repeat = 1;
-	int _epochs = 800;
+	
 	float _th = (argc > 3) ? atoi(argv[3]) : 8.;
 	// int _repeat = atoi(argv[2]);
-	// int _epochs = (argc > 3) ? atoi(argv[3]) : 800;
+	int _epochs = (argc > 4) ? atoi(argv[4]) : 800;
 	// float _th = (argc > 4) ? atoi(argv[4]) : 8.;
 
 	time_t start_time;
