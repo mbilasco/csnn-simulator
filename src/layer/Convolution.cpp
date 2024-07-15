@@ -615,13 +615,11 @@ void _priv::ConvolutionImpl::test(const std::vector<Spike> &input_spike, const T
 
 	Tensor<float> &w = _model._w;
 	Tensor<float> &th = _model._th;
-
+	// initialize Vrst = 0 for each sample.
 	std::fill(std::begin(_a), std::end(_a), 0);
+	// each neuron/filter spikes at most one time per sample.
 	std::fill(std::begin(_inh), std::end(_inh), false);
 
-	// std::mutex _convolution_mutex; // mutex to aviod access violation during multithreaded section
-								   // std::for_each(std::execution::par, input_spike.begin(), input_spike.end(), [&](const Spike &spike)
-								   // std::for_each(input_spike.begin(), input_spike.end(), [&](const Spike &spike)
 	for (const Spike &spike : input_spike)
 	{
 		std::vector<std::tuple<uint16_t, uint16_t, uint16_t, uint16_t>> output_spikes;
@@ -636,7 +634,7 @@ void _priv::ConvolutionImpl::test(const std::vector<Spike> &input_spike, const T
 
 			for (size_t z = 0; z < depth; z++)
 			{
-				if (_inh.at(x, y, z) && _model._inhibition)
+				if (_inh.at(x, y, z) )//&& _model._inhibition)
 					continue;
 
 				//_convolution_mutex.lock();

@@ -122,7 +122,10 @@ void DefaultOnOffFilter::_process(const std::string &label, Tensor<InputType> &i
 {
 	// float _cutoff = 20;
 
-	// Tensor<float>::draw_nonscaled_tensor("/home/melassal/Workspace/CSNN/csnn-simulator-build/Input_frames/test/in_" + label, in);
+		// imwrite("/home/melassal/Workspace/CSNN/csnn-simulator-build/Input_frames/test/frame_" + label + "_" + std::to_string(_i) + ".png", _frames[_i]);
+
+
+	// Tensor<float>::draw_scaled_tensor("/home/melassal/Workspace/CSNN/csnn-simulator-build/Input_frames/test/in_" + label, in, 1);
 	if (in.shape().number() <= 3) // 2D Input
 	{
 		Tensor<InputType> out(Shape({_height, _width, _depth * 2})); // the depth is doubled because there must be two seperate channels for the off cells and the on cells.
@@ -150,7 +153,7 @@ void DefaultOnOffFilter::_process(const std::string &label, Tensor<InputType> &i
 
 		in = out;
 		if (_draw == 1)
-			Tensor<float>::draw_scaled_tensor(_file_path + "/Input_frames/" + _expName + "/OOF/OOF_" + label + "_", out, 20);
+			Tensor<float>::draw_scaled_tensor(_file_path + "/Input_frames/" + _expName + "/OOF/OOF_" + label + "_", out, 255);
 	}
 	else // 3D Input
 	{
@@ -178,8 +181,8 @@ void DefaultOnOffFilter::_process(const std::string &label, Tensor<InputType> &i
 					}
 		in = out;
 		if (_draw == 1)
-			Tensor<float>::draw_scaled_tensor(_file_path + "/Input_frames/" + _expName + "/OOF/OOF_" + label + "_", out, 20);
-			//Tensor<float>::draw_nonscaled_tensor(_file_path + "/Input_frames/" + _expName + "/OOF/OOF_" + label + "_", out);
+			Tensor<float>::draw_scaled_tensor(_file_path + "/Input_frames/" + _expName + "/OOF/OOF_" + label + "_", out, 50);
+			// Tensor<float>::draw_nonscaled_tensor(_file_path + "/Input_frames/" + _expName + "/OOF/OOF_" + label + "_", out);
 	}
 
 		//	Tensor<float>::display_range_tensor(in);

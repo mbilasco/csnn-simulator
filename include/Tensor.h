@@ -729,6 +729,28 @@ public:
 	 *
 	 * @param frame The opencv matrix.
 	 */
+	static void matrix_to_colored_f_tensor(const cv::Mat &frame, Tensor<float> &out)
+	{
+		size_t _height = frame.size[0];
+		size_t _width = frame.size[1];
+		size_t _depth = frame.channels();
+		size_t _conv_depth = 1;
+
+		out = Tensor<float>(Shape({_height, _width, _depth, _conv_depth}));
+
+		for (size_t i = 0; i < _height; i++)
+			for (size_t j = 0; j < _width; j++)
+				for (size_t k = 0; k < _depth; k++)
+				{
+					out.at(i, j, k, 0) = frame.at<cv::Vec3f>(i, j)[k];
+				}
+	}
+
+	/**
+	 * @brief This function takes an opencv matrix and returns a tensor.
+	 *
+	 * @param frame The opencv matrix.
+	 */
 	static void matrices_to_colored_scaled_tensor(const std::vector<cv::Mat> &frames, Tensor<float> &out)
 	{
 		size_t _height = frames[0].size[0];
@@ -1091,7 +1113,7 @@ public:
 				for (size_t j = 0; j < _width; j++)
 					for (int k = 0; k < _depth; k++)
 					{ // Vec3b
-						frame.at<cv::Vec3f>(i, j)[k] = in.at(i, j, k, conv);
+						frame.at<cv::Vec3f>(i, j)[k] = in.at(i, j, k, conv) *255;
 					}
 			frames.push_back(frame);
 		}
@@ -1392,7 +1414,7 @@ public:
 		// CONV_DEPTH by being incremented every frame.
 		for (size_t conv = 0; conv < _conv_depth; conv++)
 		{
-			cv::Mat frame(_height, _width, CV_32F); // When I use CV_32FC3 instead of CV_32F the frame is duplicated and squished.
+			cv::Mat frame(_height, _width, CV_32FC1); // When I use CV_32FC3 instead of CV_32F the frame is duplicated and squished.
 
 			for (size_t k = 0; k < _depth; k++)
 			{

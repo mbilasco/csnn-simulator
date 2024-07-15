@@ -92,7 +92,7 @@ void SparseIntermediateExecution::_process_train_data(AbstractProcess &process, 
 		for (size_t j = 0; j < data.size(); j++)
 		{
 			Tensor<float> current = from_sparse_tensor(data[j].second);
-			process.process_train_sample(data[j].first, current, i, j, data.size());
+			process.process_train_sample(_experiment.name() + ";." + std::to_string(process.index()) + ";." + data[j].first, current, i, j, data.size());
 			data[j].second = to_sparse_tensor(current);
 
 			total_size += data[j].second.values().size();

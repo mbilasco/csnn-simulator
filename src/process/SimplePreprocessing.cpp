@@ -102,7 +102,7 @@ void SimplePreprocessing::_process(const std::string &label, Tensor<InputType> &
 		if (in.shape().dim(2) >= 3)
 			Tensor<float>::draw_colored_tensor(_file_path + "/Input_frames/" + _expName + "/SP/SP_" + label + "_", out);
 		else
-			Tensor<float>::draw_nonscaled_tensor(_file_path + "/Input_frames/" + _expName + "/SP/SP_" + label + "_", out);
+			Tensor<float>::draw_scaled_tensor(_file_path + "/Input_frames/" + _expName + "/SP/SP_" + label + "_", out, 1);
 
 	in = out;
 }

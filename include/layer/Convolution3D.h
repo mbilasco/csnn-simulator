@@ -134,6 +134,9 @@ namespace layer
 		uint32_t _sample_count;
 		uint32_t _drawn_weights;
 		uint32_t _saved_weights;
+		uint32_t _save_thresholds;
+		uint32_t _displayed_spikes;
+		
 		uint32_t _saved_random_start;
 		uint32_t _logged_spiking_neuron;
 		std::string _file_path;

@@ -6,6 +6,7 @@
 #include "layer/Pooling.h"
 #include "Distribution.h"
 #include "execution/DenseIntermediateExecution.h"
+#include "execution/DenseIntermediateExecutionPar.h"
 #include "execution/SparseIntermediateExecution.h"
 #include "analysis/Svm.h"
 #include "analysis/Activity.h"
@@ -30,17 +31,28 @@
 
 int main(int argc, char **argv)
 {
-
-	// std::string subjects[9] = {"daria", "denis", "eli", "ido", "ira", "lena", "lyova", "moshe", "shahar"};
 	std::string subjects[10] = {"alba", "amel", "andreas", "chiara", "clare", "daniel", "florian", "hedlena", "julien", "nicolas"};
-	size_t _filter_size = 3;
+	// std::string subjects[9] = {"daria", "denis", "eli", "ido", "ira", "lena", "lyova", "moshe", "shahar"};
 
-	for (std::string subject : subjects)
-		for (int _repeat = 0; _repeat < 3; _repeat++)
+	size_t _filter_size = atoi(argv[1]);
+	int _repeat = 10;
+	int _epochs = 800;
+	float _th = (argc > 2) ? atoi(argv[2]) : 8.;
+	// size_t _filter_size = atoi(argv[1]);
+	// int _repeat = atoi(argv[2]);
+	// int _epochs = (argc > 3) ? atoi(argv[3]) : 800;
+	// float _th = (argc > 4) ? atoi(argv[4]) : 8.;
+	time_t start_time;
+	time(&start_time);
+	// char *subject = argv[1];
+	for (int _rep = 0; _rep < _repeat; _rep++) // RUN MORE MG exp UCF, RUN EXP THAT I DON4T LIKE THE RESULTS OF
+	{
+		for (std::string subject : subjects)
 		{
-			std::string _dataset = "IXMAS_2_M23_" + std::to_string(_filter_size) + "_3D_" + subject;
 
-			Experiment<SparseIntermediateExecution> experiment(argc, argv, _dataset);
+			std::string _dataset = "IXMAS_" + std::to_string(start_time) + "_3D_" + std::to_string(_filter_size) + "_" + subject + "_" + std::to_string(_rep) + "_" + std::to_string(_epochs);
+
+			Experiment<DenseIntermediateExecution> experiment(argc, argv, _dataset);
 
 			// The new dimentions of a video frame, set to zero if default dimentions are needed.
 			size_t _frame_size_width = 48, _frame_size_height = 64;
@@ -59,7 +71,7 @@ int main(int argc, char **argv)
 			size_t filter_number = 64;
 			size_t spacial_stride = 1, tmp_stride = 1;
 
-			size_t sampling_size = 800; //(_frame_size_height * _frame_size_width * _frame_per_video) / (filter_size * filter_size * tmp_filter_size); // size_t tmp_pooling_size = tmp_filter_size == 2 ? 2 : 1;
+			size_t sampling_size = _epochs; //(_frame_size_height * _frame_size_width * _frame_per_video) / (filter_size * filter_size * tmp_filter_size); // size_t tmp_pooling_size = tmp_filter_size == 2 ? 2 : 1;
 			const char *input_path_ptr = std::getenv("INPUT_PATH");
 			if (input_path_ptr == nullptr)
 			{
@@ -77,16 +89,19 @@ int main(int argc, char **argv)
 			experiment.add_test<dataset::Video>(input_path + subject + "/test", _video_frames, _frame_gap_test, _th_mv, _test_sample_per_video, _grey, experiment.name(), _draw, _frame_size_width, _frame_size_height);
 
 			float t_obj = 0.65;
+
 			float th_lr = 0.09f;
 			float w_lr = 0.009f;
+			// float th_lr = 1.0f;
+			// float w_lr = 0.1f;
 
-			// filter_width, filter_height, filter_depth, filter_number, model_path, stride_x, stride_y, stride_k, padding_x, padding_y, padding_k
-			auto &conv1 = experiment.push<layer::Convolution3D>(_filter_size, _filter_size, tmp_filter_size, filter_number, "", 1, 1, tmp_stride);
-			conv1.set_name("conv1");
+			// This function takes the following(Layer Name, Kernel width, kernel height, number of kernels, and a flag to draw the weights if 1 or not if 0)
+			auto &conv1 = experiment.push<layer::Convolution3D>(_filter_size, _filter_size, tmp_filter_size, 64, "", 1, 1, tmp_stride);
+			conv1.set_name("conv1"); // 56, 76, 8
 			conv1.parameter<bool>("draw").set(false);
-			conv1.parameter<bool>("save_weights").set(true);
+			conv1.parameter<bool>("save_weights").set(false);
 			conv1.parameter<bool>("save_random_start").set(false);
-			conv1.parameter<bool>("log_spiking_neuron").set(true);
+			conv1.parameter<bool>("log_spiking_neuron").set(false);
 			conv1.parameter<bool>("inhibition").set(true);
 			conv1.parameter<uint32_t>("epoch").set(sampling_size);
 			conv1.parameter<float>("annealing").set(0.95f);
@@ -94,7 +109,7 @@ int main(int argc, char **argv)
 			conv1.parameter<float>("t_obj").set(t_obj);
 			conv1.parameter<float>("lr_th").set(th_lr);
 			conv1.parameter<Tensor<float>>("w").distribution<distribution::Uniform>(0.0, 1.0);
-			conv1.parameter<Tensor<float>>("th").distribution<distribution::Gaussian>(8.0, 0.1);
+			conv1.parameter<Tensor<float>>("th").distribution<distribution::Gaussian>(_th, 0.1);
 			conv1.parameter<STDP>("stdp").set<stdp::Biological>(w_lr, 0.1f);
 
 			auto &conv1_out = experiment.output<TimeObjectiveOutput>(conv1, t_obj);
@@ -107,4 +122,5 @@ int main(int argc, char **argv)
 
 			experiment.run(10000);
 		}
+	}
 }

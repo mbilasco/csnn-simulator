@@ -124,8 +124,11 @@ void MotionGrid::_process(const std::string &label, Tensor<InputType> &in) const
 		for (int y = 0; y < _frame_size.height; y++)
 			for (int x = 0; x < _frame_size.width; x++)
 			{
-				float a = _scaler * flow_parts[0].at<float>(y, x); //_scaler * (std::abs(flow_parts[0].at<float>(y, x)) - flow_parts[0].at<float>(y, x)) / 2;
-				float b = _scaler * flow_parts[1].at<float>(y, x); //_scaler * (std::abs(flow_parts[1].at<float>(y, x)) - flow_parts[1].at<float>(y, x)) / 2;
+				// float a = _scaler * flow_parts[0].at<float>(y, x); //_scaler * (std::abs(flow_parts[0].at<float>(y, x)) - flow_parts[0].at<float>(y, x)) / 2;
+				// float b = _scaler * flow_parts[1].at<float>(y, x); //_scaler * (std::abs(flow_parts[1].at<float>(y, x)) - flow_parts[1].at<float>(y, x)) / 2;
+				
+				float a = _scaler * (std::abs(flow_parts[0].at<float>(y, x)) - flow_parts[0].at<float>(y, x)) / 2;
+				float b = _scaler * (std::abs(flow_parts[1].at<float>(y, x)) - flow_parts[1].at<float>(y, x)) / 2;
 				
 				if (a > 255)
 					a = 255;
@@ -159,11 +162,6 @@ void MotionGrid::_process(const std::string &label, Tensor<InputType> &in) const
 					Vyplus.at<uint8_t>(y, x) = 0;
 				}
 			}
-
-		// imwrite("/home/melassal/Workspace/CSNN/csnn-simulator-build/Input_frames/test/Vxminus.png", Vxminus);
-		// imwrite("/home/melassal/Workspace/CSNN/csnn-simulator-build/Input_frames/test/Vxplus.png", Vxplus);
-		// imwrite("/home/melassal/Workspace/CSNN/csnn-simulator-build/Input_frames/test/Vyminus.png", Vyminus);
-		// imwrite("/home/melassal/Workspace/CSNN/csnn-simulator-build/Input_frames/test/Vyplus.png", Vyplus);
 
 		for (int i = 0; i < _width; i++)
 			for (int j = 0; j < _height; j++)

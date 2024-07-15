@@ -6,26 +6,26 @@ import matplotlib.pyplot as plt
 SCALER = 50
 
 # The dimentions that the input will be resized to later.
-WIDTH = 60
+WIDTH = 80
 HEIGHT = 60
 COLORS = 3
 
 COUNTER = 0
-SAMPLES_PER_VID = 10
+SAMPLES_PER_VID = 1
 
 # Number of frames that form the output 3D cube grid.
-HORIZIMAGECOUNT = 5
-VERTIMAGECOUNT = 4
+HORIZIMAGECOUNT = 3
+VERTIMAGECOUNT = 2
 
 actionArray = ["boxing", "running", "handclapping","handwaving","jogging","walking"]
-ContainingFolder = "train"
+ContainingFolder = "test"
 
 for Action in actionArray:
     # Get the path of the training and testing datasets that is structured as shown below in the comments at the end of this class.
     # Choose the input videos that will be transformed into 3D cubes, this directory must contain a similar structure.
-    inputDirectory = "/home/melassal/Workspace/Datasets/Dummy/KTH/"+ContainingFolder+"/"+Action
+    inputDirectory = "/home/melassal/Workspace/Datasets/KTH/"+ContainingFolder+"/"+Action
     # Choose where to save these generated cubes.
-    outputDirectory = "/home/melassal/Workspace/CSNN/csnn-simulator-build/Input_frames/KTH/" + ContainingFolder+"/"+Action
+    outputDirectory = "/home/melassal/Workspace/Datasets/KTH/EdgeGrid3/" + ContainingFolder+"/"+Action
     # Colect the file names, because they are used as labels.
     fileNames = os.listdir(inputDirectory)
 
@@ -93,8 +93,7 @@ for Action in actionArray:
                     canny_img, 50, 255, cv2.THRESH_BINARY)
                 
                 movementSum = cv2.sumElems(blackAndWhiteImage)
-                # print(Action)
-                # print(movementSum)
+
                 if movementSum[0] < 500:
                     permissionToSave = False   
                
@@ -144,6 +143,7 @@ for Action in actionArray:
             # breaking from the inner loop:
             if cv2.waitKey(10) & 0xFF == ord('q'):
                 break
+        
 
         # closing video file
         vid.release()

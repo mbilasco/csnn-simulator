@@ -50,11 +50,14 @@ LatencyCoding::LatencyCoding(float max_timestamp) : LatencyCoding()
 void LatencyCoding::process(const Tensor<float> &in, Tensor<Time> &out)
 {
 	size_t size = in.shape().product(); // a product of all the dimentions.
+	size_t total_spike_number = 0;
 
 	for (size_t i = 0; i < size; i++)
 	{
 		Time ts = std::max<Time>(0.0f, 1.0f - in.at_index(i));
 		out.at_index(i) = ts == 1.0f || (ts > _max_timestamp && _max_timestamp > 0) ? INFINITE_TIME : ts;
+		if (out.at_index(i) != INFINITE_TIME)
+		total_spike_number++;
 	}
 }
 
