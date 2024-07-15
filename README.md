@@ -1,6 +1,20 @@
 # CSNN-simulator
 
-This is a new version of the CSNN simulator that contains 2D and 3D convolution, along with two-stream methods for video analysis
+This is a new version of the CSNN simulator that contains 2D and 3D convolution, along with two-stream methods for video analysis.
+
+In order to run a 2D experiment, use the Convolution class in the layer, or Convolution3D while setting the temporal depth to 1.
+
+In order to run a 3D experiment, use the Convolution3D class and set the temporal depth > 1.
+
+In order to run a two-stream experiment, chech the TwoStream.cpp class where two experiments are created, after that, the results of these experiments are fused and evaluated using the SVM.
+
+The SVM.cpp class can be used to test the classification rate of the SVM alone without an SNN. This is useful to make sure that the SNN is indeed adding a benefit.
+
+The FeatureEvaluation.cpp class can be used to re-evaluate extracted and saved features by the SVM alone without re-training and re-running an SNN.
+
+For execution policies, SparseIntermediateExecutionNew can be used for saving certain things like output features adn output timestamps (features but as spikes). If there is no need to save anything use SparseIntermediateExecution instead, it's faster. DenseIntermediateExecution is even faster.
+
+
 
 
 ## Description

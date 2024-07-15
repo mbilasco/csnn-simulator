@@ -102,12 +102,7 @@ int main(int argc, char **argv)
 
 		experiment_space.push<process::MaxScaling>();
 		experiment_time.push<process::MaxScaling>();
-
-		// experiment_time.push<process::SetTemporalDepth>(experiment_time.name(), 10);
-
-		// experiment_space.push<process::DefaultOnOffFilter>(24, 0.5, 5.0);
-		// experiment_time.push<process::DefaultOnOffFilter>(24, 0.5, 5.0);
-
+		
 		experiment_space.push<process::DefaultOnOffFilter>(7, 1.0, 4.0);
 		experiment_time.push<process::DefaultOnOffFilter>(7, 1.0, 4.0);
 

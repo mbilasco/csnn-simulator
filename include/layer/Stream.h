@@ -16,7 +16,8 @@
 namespace layer
 {
 	/**
-	 * @brief  This is only a filler layer to pass some dimentions to the SVM.
+	 * @brief  This is only a filler layer to pass some dimentions to the SVM. 
+	 * Useful when I don't want to run an SNN, and only want to evaluate already extracted features or raw data with the SVM.
 	 */
 	class Stream : public Layer4D
 	{

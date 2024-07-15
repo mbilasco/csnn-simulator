@@ -3,6 +3,7 @@ import PIL
 from PIL import Image
 
 # This class is to transform any dataset into MNIST format.
+# Why does this class exist? It was created before the existance of the video.cpp class in /src/dataset/Video.cpp which allowed to input videos directly. It can be ignored.
 # To use this class, choose your input & output directories + specify your class names at like 97.
 MAGIC_NUMBER_FOR_TRAINING_SET_LABEL_FILE = 0x00000801
 MAGIC_NUMBER_FOR_TRAINING_SET_IMAGE_FILE = 0x00000803
