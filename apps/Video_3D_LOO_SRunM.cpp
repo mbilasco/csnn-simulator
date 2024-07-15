@@ -5,6 +5,7 @@
 #include "layer/Convolution3D.h"
 #include "layer/Pooling.h"
 #include "Distribution.h"
+#include "execution/DenseIntermediateExecution.h"
 #include "execution/SparseIntermediateExecution.h"
 #include "analysis/Svm.h"
 #include "analysis/Activity.h"
@@ -50,7 +51,7 @@ int main(int argc, char **argv)
 
 			std::string _dataset = "IXMAS_" + std::to_string(start_time) + "_3D_" + std::to_string(_filter_size) + "_" + subject + "_" + std::to_string(_rep) + "_" + std::to_string(_epochs);
 
-			Experiment<SparseIntermediateExecution> experiment(argc, argv, _dataset);
+			Experiment<DenseIntermediateExecution> experiment(argc, argv, _dataset);
 
 			// The new dimentions of a video frame, set to zero if default dimentions are needed.
 			size_t _frame_size_width = 48, _frame_size_height = 64;

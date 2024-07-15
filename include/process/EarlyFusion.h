@@ -12,7 +12,7 @@ namespace process
 	 * @param expName The name of the expirement, this name will log the drawn frames.
 	 * @param draw A flag that draws the pre-processed information in the build file.
 	 * @param fused_frames_number Number of frames that are fused together to create one sample.
-	 * @param method Number of frames that are fused together to create one sample.
+	 * @param method If 0, concatinates by row, if 1 concatinates by column.
 	 */
 	class EarlyFusion : public UniquePassProcess
 	{

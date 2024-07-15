@@ -72,6 +72,9 @@ void OrientationAmplitude::_process(const std::string &label, Tensor<InputType> 
 	{
 		cv::resize(_frames[_i], _frames[_i], _frame_size);
 		cv::resize(_frames[_i + 1], _frames[_i + 1], _frame_size);
+
+		// imwrite("/home/melassal/Workspace/CSNN/csnn-simulator-build/Input_frames/test/frame_" + label + "_" + std::to_string(_i) + ".png", _frames[_i]);
+
 		cv::Mat img1 = _frames[_i], img2 = _frames[_i + 1];
 		if (_frames[_i].channels() > 1)
 		{

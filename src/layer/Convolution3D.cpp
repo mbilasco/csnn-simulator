@@ -38,7 +38,7 @@ Convolution3D::Convolution3D(size_t filter_number, size_t filter_width, size_t f
 							 size_t stride_x, size_t stride_y, size_t stride_k, size_t padding_x, size_t padding_y, size_t padding_k)
 	: Layer4D(_register, filter_number, filter_width, filter_height, filter_depth, stride_x, stride_y, stride_k, padding_x, padding_y, padding_k),
 	  _inhibition(true), _model_path(model_path), _draw(false), _save_weights(false), _save_random_start(false), _log_spiking_neuron(false), _annealing(1.0),
-	  _min_th(0), _t_obj(0), _lr_th(0), _sample_number(0), _sample_count(0), _spike_count(0), _drawn_weights(0), _saved_weights(0), _logged_spiking_neuron(0), _saved_random_start(0),
+	  _min_th(0), _t_obj(0), _lr_th(0), _sample_number(0), _sample_count(0), _spike_count(0), _drawn_weights(0), _saved_weights(0), _displayed_spikes(0), _logged_spiking_neuron(0), _saved_random_start(0),
 	  _w(), _th(), _stdp(nullptr), _input_depth(0), _impl(*this)
 {
 	add_parameter("draw", _draw);
@@ -640,7 +640,6 @@ void _priv::Convolution3DImpl::train(const std::string &label, const std::vector
 
 void _priv::Convolution3DImpl::train(const std::vector<Spike> &input_spike, const Tensor<Time> &input_time, std::vector<Spike> &output_spike)
 {
-	std::mutex _convolution_train_mutex; // mutex to aviod access violation durring multithreaded section
 	///////////////////////////////
 	std::string delimiter = ";.";
 	std::string _exp_name = _label.substr(0, _label.find(delimiter));
@@ -673,6 +672,8 @@ void _priv::Convolution3DImpl::train(const std::vector<Spike> &input_spike, cons
 			// integrate the weight value in the neurons activation (multiple spikes are integrated to surpass the internal threshould of the neuron)
 			if (_a.at(0, 0, z, 0) >= th.at(z)) // a spike is fired
 			{
+				/// @brief counting the spikes.
+				_model._spike_count++;
 				for (size_t z1 = 0; z1 < depth; z1++)
 				{
 					th.at(z1) -= _model._lr_th * (spike.time - _model._t_obj);
@@ -713,7 +714,23 @@ void _priv::Convolution3DImpl::train(const std::vector<Spike> &input_spike, cons
 				if (_model._current_epoch_number == _model._epoch_number - 1 && _model._save_weights && _model._saved_weights == 0)
 				{
 					SaveWeights(_model._file_path + "/Weights/" + _exp_name + "/" + _layerIndex + "/" + _exp_name + ".json", _label, w);
+
 					_model._saved_weights = 1;
+				}
+
+				if (_model._current_epoch_number == _model._epoch_number - 1 && _model._save_thresholds)
+				{
+					SaveWeights(_model._file_path + "/Thresholds/" + _exp_name + "/" + _layerIndex + "/" + _exp_name + ".json", _label, th);
+				}
+
+				if (_model._current_epoch_number == _model._epoch_number - 1 && _model._displayed_spikes == 0)
+				{
+					std::cout << "\r[Spike count train: " + std::to_string(_model._spike_count) + "] \n";
+					std::filesystem::create_directories(_model._file_path + "/SpikeNumber/" + _model._exp_name + "/train/");
+					LogSpikeNumber(_model._file_path + "/SpikeNumber/" + _model._exp_name + "/train/" + _model._exp_name, _model._spike_count);
+
+					_model._spike_count = 0;
+					_model._displayed_spikes = 1;
 				}
 
 				if (_model._inhibition)
@@ -731,13 +748,15 @@ void _priv::Convolution3DImpl::test(const std::vector<Spike> &input_spike, const
 	Tensor<float> &w = _model._w;
 	Tensor<float> &th = _model._th;
 
+	// initialize Vrst = 0 for each sample.
 	std::fill(std::begin(_a), std::end(_a), 0);
+	// each neuron/filter spikes at most one time per sample.
 	std::fill(std::begin(_inh), std::end(_inh), false);
 
 	std::mutex _convolution_test_mutex; // mutex to aviod access violation durring multithreaded section
 
-	// std::for_each(std::execution::par, input_spike.begin(), input_spike.end(), [&](const Spike &spike)
 	for (const Spike &spike : input_spike)
+	// std::for_each(std::execution::par, input_spike.begin(), input_spike.end(), [&](const Spike &spike)
 	{
 		std::vector<std::tuple<uint16_t, uint16_t, uint16_t, uint16_t, uint16_t, uint16_t>> output_spikes;
 		_model.forward(spike.x, spike.y, spike.k, output_spikes);
@@ -754,40 +773,39 @@ void _priv::Convolution3DImpl::test(const std::vector<Spike> &input_spike, const
 			for (size_t z = 0; z < depth; z++)
 			{
 				// The neurons that have their inhibition flag set to ture are ignored.
-				if (_inh.at(x, y, z, k) && _model._inhibition)
+				if (_inh.at(x, y, z, k)) //&& _model._inhibition)
 				{
 					continue;
 				}
 				// The rest of the neurons that have their inh flag set to false get their activations updated.
-				//_convolution_test_mutex.lock();
+				// _convolution_test_mutex.lock();
 				_a.at(x, y, z, k) += w.at(w_x, w_y, spike.z, z, w_k);
-				//_convolution_test_mutex.unlock();
+				// _convolution_test_mutex.unlock();
 				// If the activation crossed the threshould, the neuron has fired a spike, and it's _inh flag is set to true so that it doesn't fire again.
 				if (_a.at(x, y, z, k) >= th.at(z))
 				{
-					//_convolution_test_mutex.lock();
+					// _convolution_test_mutex.lock();
 					output_spike.emplace_back(spike.time, x, y, z, k);
 					// The neuron that fires once is not allowed to fire again in this sample, so _inh is set to true.
+
 					_inh.at(x, y, z, k) = true;
-					//_convolution_test_mutex.unlock();
+					// _convolution_test_mutex.unlock();
 
 					/// @brief counting the spikes.
 					_model._spike_count++;
-					// std::cout << "\r[Spike count: " + std::to_string(_model._spike_count) + "]";
-					// std::cout.flush();
 				}
 			}
 		}
 	}
-	//});
+	// });
 	draw_progress(_model._sample_count, _model._sample_number);
 
 	if (_model._sample_count == _model._sample_number)
 	{
-		std::cout << "\r[Spike count: " + std::to_string(_model._spike_count) + "] \n";
-		std::filesystem::create_directories(_model._file_path + "/SpikeNumber/" + _model._exp_name + "/");
-		LogSpikeNumber(_model._file_path + "/SpikeNumber/" + _model._exp_name + "/" + _model._exp_name, _model._spike_count);
-		// experiment()->log()<< << "[Spike count: " << std::to_string(_model._spike_count) << "] \n";
+		std::cout << "\r[Spike count test: " + std::to_string(_model._spike_count) + "] \n";
+		std::filesystem::create_directories(_model._file_path + "/SpikeNumber/" + _model._exp_name + "/test/");
+		LogSpikeNumber(_model._file_path + "/SpikeNumber/" + _model._exp_name + "/test/" + _model._exp_name, _model._spike_count);
+
 		_model._sample_count = 0;
 		_model._spike_count = 0;
 	}

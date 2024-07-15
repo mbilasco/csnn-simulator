@@ -5,6 +5,7 @@
 #include "layer/Convolution3D.h"
 #include "layer/Pooling.h"
 #include "Distribution.h"
+#include "execution/DenseIntermediateExecution.h"
 #include "execution/SparseIntermediateExecution.h"
 #include "analysis/Svm.h"
 #include "analysis/Activity.h"
@@ -29,16 +30,18 @@
 
 int main(int argc, char **argv)
 {
-	std::string subjects[10] = {"alba", "amel", "andreas", "chiara", "clare", "daniel", "florian", "hedlena", "julien", "nicolas"};
+	// std::string subjects[10] = {"alba", "amel", "andreas", "chiara", "clare", "daniel", "florian", "hedlena", "julien", "nicolas"};
+	std::string subjects[9] = {"daria", "denis", "eli", "ido", "ira", "lena", "lyova", "moshe", "shahar"};
 
 	size_t _filter_size = atoi(argv[1]);
 	int _repeat = 10;
 	int _epochs = 800;
 	float _th = (argc > 2) ? atoi(argv[2]) : 8.;
+	// float t_obj = (argc > 3) ? atoi(argv[3]) : 0.65;
+	// size_t _filter_size = atoi(argv[1]);
 	// int _repeat = atoi(argv[2]);
 	// int _epochs = (argc > 3) ? atoi(argv[3]) : 800;
 	// float _th = (argc > 4) ? atoi(argv[4]) : 8.;
-
 	time_t start_time;
 	time(&start_time);
 	// char *subject = argv[1];
@@ -47,12 +50,13 @@ int main(int argc, char **argv)
 		for (std::string subject : subjects)
 		{
 
-			std::string _dataset = "IXMAS_" + std::to_string(start_time) + "_2D1D_" + std::to_string(_filter_size) + "_" + subject + "_" + std::to_string(_rep) + "_" + std::to_string(_epochs);
+			std::string _dataset = "Weiz_" + std::to_string(start_time) + "_2D1D_" + std::to_string(_filter_size) + "_" + subject + "_" + std::to_string(_rep) + "_" + std::to_string(_epochs);
 
-			Experiment<SparseIntermediateExecution> experiment(argc, argv, _dataset);
+			Experiment<DenseIntermediateExecution> experiment(argc, argv, _dataset);
 
 			// The new dimentions of a video frame, set to zero if default dimentions are needed.
-			size_t _frame_size_width = 48, _frame_size_height = 64;
+			// size_t _frame_size_width = 48, _frame_size_height = 64;
+			size_t _frame_size_width = 91, _frame_size_height = 72;
 
 			// number of frames to skip, this speeds up the action.
 			size_t _video_frames = 10, _train_sample_per_video = 0, _test_sample_per_video = 0, _train_sample_per_video_2 = 0, _test_sample_per_video_2 = 0;
@@ -76,6 +80,7 @@ int main(int argc, char **argv)
 			std::string input_path(input_path_ptr);
 
 			experiment.push<process::DefaultOnOffFilter>(7, 1.0, 4.0);
+			// experiment.push<process::DefaultOnOffFilter>(24, 0.5, 5.0);
 			experiment.push<process::MaxScaling>();
 			experiment.push<LatencyCoding>();
 
@@ -84,10 +89,12 @@ int main(int argc, char **argv)
 			experiment.add_test<dataset::Video>(input_path + subject + "/test", _video_frames, _frame_gap_test, _th_mv, _test_sample_per_video, _grey, experiment.name(), _draw, _frame_size_width, _frame_size_height);
 
 			float t_obj = 0.65;
-			float t_obj1 = 0.65;
+			float t_obj1 = t_obj;
 
 			float th_lr = 0.09f;
 			float w_lr = 0.009f;
+			// float th_lr = 1.0f;
+			// float w_lr = 0.1f;
 
 			// This function takes the following(Layer Name, Kernel width, kernel height, number of kernels, and a flag to draw the weights if 1 or not if 0)
 			auto &conv1 = experiment.push<layer::Convolution3D>(_filter_size, _filter_size, 1, 64, "", 1, 1, tmp_stride);

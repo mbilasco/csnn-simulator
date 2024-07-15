@@ -61,14 +61,7 @@ void CompositeChannels::_process(const std::string &label, Tensor<InputType> &in
 	else
 		Tensor<float>::tensor_to_matrices(_frames, in);
 
-	// _frames.push_back(_frames[_frames.size() - 3]);
-
 	cv::Size _frame_size(_width, _height);
-
-	cv::Mat oldvelocityx(_frame_size, CV_8UC3, cv::Scalar(128, 128, 128));
-	cv::Mat oldvelocityy(_frame_size, CV_8UC3, cv::Scalar(128, 128, 128));
-	cv::Mat velocityx(_frame_size, CV_8UC3, cv::Scalar(128, 128, 128));
-	cv::Mat velocityy(_frame_size, CV_8UC3, cv::Scalar(128, 128, 128));
 
 	cv::Mat origcopy(_frame_size, CV_8UC3, cv::Scalar(128, 128, 128));
 
@@ -82,6 +75,7 @@ void CompositeChannels::_process(const std::string &label, Tensor<InputType> &in
 		prevgray = _frames[_i];
 		img = _frames[_i + 1];
 
+		// # ignore if greyscale
 		if (_frames[_i].channels() >= 3)
 		{
 			cv::cvtColor(prevgray, prevgray, cv::COLOR_BGR2GRAY);
@@ -89,12 +83,9 @@ void CompositeChannels::_process(const std::string &label, Tensor<InputType> &in
 		}
 
 		cv::Mat difference = prevgray - img;
-		// To flip a video use this command:
+		// To make sure the img is the good size (ignore if good size):
 		cv::resize(img, img, _frame_size);
-		// save original for later
-		img.copyTo(original);
-		img.copyTo(origcopy);
-
+	
 		// if previous frame is not empty.. There is a picture of previous frame.
 		if (prevgray.empty() == false)
 		{
@@ -102,22 +93,13 @@ void CompositeChannels::_process(const std::string &label, Tensor<InputType> &in
 			cv::Mat flow(_frame_size, CV_32FC1);
 			calcOpticalFlowFarneback(prevgray, img, flow, 0.4, 1, 12, 2, 8, 1.2, 0);
 
-			// By y += 5, x += 5 you can specify the grid
-			velocityx.copyTo(oldvelocityx);
-			velocityy.copyTo(oldvelocityy);
-
-			for (int y = 0; y < original.rows; y += 1)
+			for (int y = 0; y < img.rows; y += 1)
 			{
-				for (int x = 0; x < original.cols; x += 1)
+				for (int x = 0; x < img.cols; x += 1)
 				{
 					// get the flow from y, x position * 10 for better visibility
 					const cv::Point2f flowatxy = flow.at<cv::Point2f>(y, x) * 10;
-					// draw line at flow direction
-					int x2, y2;
-
-					x2 = cvRound(x + flowatxy.x);
-					y2 = cvRound(y + flowatxy.y);
-
+				
 					int vx3, vy3;
 					vx3 = cvRound(flowatxy.x);
 					vy3 = cvRound(flowatxy.y);
@@ -140,52 +122,25 @@ void CompositeChannels::_process(const std::string &label, Tensor<InputType> &in
 					vx3 = vx3 + 128;
 					vy3 = vy3 + 128;
 
-					if ((x % 10 == 0) && (y % 10 == 0))
-						line(original, cv::Point(x, y), cv::Point(x2, y2), cv::Scalar(255, 0, 0));
-
-					velocityx.at<cv::Vec3b>(y, x)[0] = vx3;
-					velocityx.at<cv::Vec3b>(y, x)[1] = vx3;
-					velocityx.at<cv::Vec3b>(y, x)[2] = vx3;
-					velocityy.at<cv::Vec3b>(y, x)[0] = vy3;
-					velocityy.at<cv::Vec3b>(y, x)[1] = vy3;
-					velocityy.at<cv::Vec3b>(y, x)[2] = vy3;
-
 					compositeframe.at<cv::Vec3b>(y, x)[0] = vx3;
 					compositeframe.at<cv::Vec3b>(y, x)[1] = vy3;
-					if ((abs(flowatxy.x) > 15) || (abs(flowatxy.y) > 15))
-						compositeframe.at<cv::Vec3b>(y, x)[2] = img.at<float>(y, x);
+
+
+					int grayscalevalue = img.at<cv::Vec3b>(y, x)[0];
+					grayscalevalue += img.at<cv::Vec3b>(y, x)[1];
+					grayscalevalue += img.at<cv::Vec3b>(y, x)[2];
+					grayscalevalue = grayscalevalue / 3;
+
+					grayscalevalue = difference.at<float>(y, x) != 0 ? grayscalevalue : 0;
+
+					if ((abs(flowatxy.x) > 10) || (abs(flowatxy.y) > 10))
+					{
+						compositeframe.at<cv::Vec3b>(y, x)[2] = grayscalevalue;
+					}
 					else
+					{
 						compositeframe.at<cv::Vec3b>(y, x)[2] = 0;
-
-					// int grayscalevalue = difference.at<float>(y, x) != 0 ? img.at<float>(y, x) : 0;
-
-					// compositeframe.at<cv::Vec3b>(y, x)[0] = vx3;
-					// compositeframe.at<cv::Vec3b>(y, x)[1] = vy3;
-					// if ((abs(flowatxy.x) > 15) || (abs(flowatxy.y) > 15))
-					// 	compositeframe.at<cv::Vec3b>(y, x)[2] = grayscalevalue;
-					// else
-					// 	compositeframe.at<cv::Vec3b>(y, x)[2] = 0;
-
-					// int grayscalevalue = origcopy.at<cv::Vec3b>(y, x)[0];
-					// grayscalevalue += origcopy.at<cv::Vec3b>(y, x)[1];
-					// grayscalevalue += origcopy.at<cv::Vec3b>(y, x)[0];
-					// grayscalevalue = grayscalevalue / 3;
-					// if (grayscalevalue > 255)
-					// {
-					// 	grayscalevalue = 255;
-					//};
-
-					// compositeframe.at<cv::Vec3b>(y, x)[0] = vx3;
-					// compositeframe.at<cv::Vec3b>(y, x)[1] = vy3;
-
-					// if ((abs(flowatxy.x) > 10) || (abs(flowatxy.y) > 10))
-					// {
-					// 	compositeframe.at<cv::Vec3b>(y, x)[2] = grayscalevalue;
-					// }
-					// else
-					// {
-					// 	compositeframe.at<cv::Vec3b>(y, x)[2] = 0;
-					// };
+					};
 				}
 			}
 

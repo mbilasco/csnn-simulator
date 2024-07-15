@@ -69,6 +69,8 @@ Tensor<float> TimeObjectiveOutput::process(const Tensor<Time> &in)
 		out.at_index(i) = t == INFINITE_TIME ? 0.0 : std::min<Time>(1.0, std::max<Time>(0.0, 1.0 - (t - _t_obj) / (1.0 - _t_obj)));
 	}
 
+	// Tensor<float>::draw_scaled_tensor("/home/melassal/Workspace/CSNN/csnn-simulator-build/test/", out, 255);
+
 	return out;
 }
 

@@ -90,7 +90,7 @@ std::pair<std::string, Tensor<InputType>> Image::next()
 		_frame_cursor++;
 	}
 
-	// Tensor<float>::draw_colored_tensor("/home/melassal/Workspace/Datasets/test/frame" + out.first + "_" + std::to_string(_frame_cursor) + "_", out.second);
+	//Tensor<float>::draw_colored_tensor("/home/melassal/Workspace/Datasets/test/" + out.first + "_" + std::to_string(_frame_cursor) + "_", out.second);
 
 	if (_frame_cursor >= _total_frames_in_folder)
 	{

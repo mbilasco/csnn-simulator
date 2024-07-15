@@ -9,7 +9,7 @@ using namespace process;
 #include <opencv2/video.hpp>
 
 //
-//	CompositeChannels2
+//	CompositeChannels2 This is CCOA in the paper.
 //
 static RegisterClassParameter<CompositeChannels2, ProcessFactory> _register_1("CompositeChannels2");
 
@@ -63,10 +63,6 @@ void CompositeChannels2::_process(const std::string &label, Tensor<InputType> &i
 
 	cv::Size _frame_size(_width, _height);
 
-	cv::Mat oldvelocityx(_frame_size, CV_8UC3, cv::Scalar(128, 128, 128));
-	cv::Mat oldvelocityy(_frame_size, CV_8UC3, cv::Scalar(128, 128, 128));
-	cv::Mat velocityx(_frame_size, CV_8UC3, cv::Scalar(128, 128, 128));
-	cv::Mat velocityy(_frame_size, CV_8UC3, cv::Scalar(128, 128, 128));
 
 	cv::Mat origcopy(_frame_size, CV_8UC3, cv::Scalar(128, 128, 128));
 
@@ -88,8 +84,8 @@ void CompositeChannels2::_process(const std::string &label, Tensor<InputType> &i
 		// To flip a video use this command:
 		cv::resize(img, img, _frame_size);
 		// save original for later
-		img.copyTo(original);
-		img.copyTo(origcopy);
+		// img.copyTo(original);
+		// img.copyTo(origcopy);
 
 		// optical flow
 		cv::Mat flow(_frame_size, CV_32FC1);
@@ -119,21 +115,12 @@ void CompositeChannels2::_process(const std::string &label, Tensor<InputType> &i
 			cv::Mat flow(_frame_size, CV_32FC1);
 			calcOpticalFlowFarneback(prevgray, img, flow, 0.4, 1, 12, 2, 8, 1.2, 0);
 
-			// By y += 5, x += 5 you can specify the grid
-			velocityx.copyTo(oldvelocityx);
-			velocityy.copyTo(oldvelocityy);
-
-			for (int y = 0; y < original.rows; y += 1)
+			for (int y = 0; y < img.rows; y += 1)
 			{
-				for (int x = 0; x < original.cols; x += 1)
+				for (int x = 0; x < img.cols; x += 1)
 				{
 					// get the flow from y, x position * 10 for better visibility
 					const cv::Point2f flowatxy = flow.at<cv::Point2f>(y, x) * 10;
-					// draw line at flow direction
-					int x2, y2;
-
-					x2 = cvRound(x + flowatxy.x);
-					y2 = cvRound(y + flowatxy.y);
 
 					int vx3, vy3;
 					vx3 = cvRound(flowatxy.x);
@@ -156,16 +143,6 @@ void CompositeChannels2::_process(const std::string &label, Tensor<InputType> &i
 					};
 					vx3 = vx3 + 128;
 					vy3 = vy3 + 128;
-
-					if ((x % 10 == 0) && (y % 10 == 0))
-						line(original, cv::Point(x, y), cv::Point(x2, y2), cv::Scalar(255, 0, 0));
-
-					velocityx.at<cv::Vec3b>(y, x)[0] = vx3;
-					velocityx.at<cv::Vec3b>(y, x)[1] = vx3;
-					velocityx.at<cv::Vec3b>(y, x)[2] = vx3;
-					velocityy.at<cv::Vec3b>(y, x)[0] = vy3;
-					velocityy.at<cv::Vec3b>(y, x)[1] = vy3;
-					velocityy.at<cv::Vec3b>(y, x)[2] = vy3;
 
 					int optflowvalue = bgr.at<cv::Vec3b>(y, x)[0];
 					optflowvalue += bgr.at<cv::Vec3b>(y, x)[1];

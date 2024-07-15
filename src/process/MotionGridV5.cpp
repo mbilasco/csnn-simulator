@@ -155,7 +155,7 @@ void MotionGridV5::_process(const std::string &label, Tensor<InputType> &in) con
 
 			if (_frames_width != 0 || _frames_height != 0)
 			{
-				cv::resize(totalframe, reducedtotalframe, _frame_size2, cv::INTER_LINEAR);
+				cv::resize(totalframe, reducedtotalframe, _frame_size2);//, cv::INTER_LINEAR);
 				Tensor<float>::matrix_to_tensor(reducedtotalframe, out);
 			}
 			else

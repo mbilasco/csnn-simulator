@@ -5,6 +5,7 @@
 #include "layer/Convolution3D.h"
 #include "layer/Pooling.h"
 #include "Distribution.h"
+#include "execution/DenseIntermediateExecution.h"
 #include "execution/SparseIntermediateExecution.h"
 #include "analysis/Svm.h"
 #include "analysis/Activity.h"
@@ -29,15 +30,11 @@
 
 int main(int argc, char **argv)
 {
-	size_t _filter_size = atoi(argv[1]);
-	int _repeats = 10;
+	size_t _filter_size =  atoi(argv[1]);
+	int _repeats = 1;
 	int _epochs = 800;
 	float _th = (argc > 2) ? atoi(argv[2]) : 8.;
-	
-	// size_t _filter_size = 10;
-	// int _repeats = 10;
-	// int _epochs = 800;
-	// float _th = 8.0;
+
 
 	time_t start_time;
 	time(&start_time);
@@ -45,9 +42,9 @@ int main(int argc, char **argv)
 	for (int _repeat = 0; _repeat < _repeats; _repeat++)
 	{
 
-		std::string _dataset = "KTH_" + std::to_string(start_time) + "_3D_" + std::to_string(_filter_size) + "_" + std::to_string(_repeat) + "_" + std::to_string(_epochs) + "_" + std::to_string(floor(_th));
+		std::string _dataset = "KTH_" + std::to_string(start_time) + "_3D_" + std::to_string(_filter_size) + "_" + std::to_string(_repeat) + "_" + std::to_string(_epochs) + "_" + std::to_string( floor(_th));
 
-		Experiment<SparseIntermediateExecution> experiment(argc, argv, _dataset);
+		Experiment<DenseIntermediateExecution> experiment(argc, argv, _dataset);
 
 		// The new dimentions of a video frame, set to zero if default dimentions are needed.
 		size_t _frame_size_width = 80, _frame_size_height = 60;
@@ -90,7 +87,7 @@ int main(int argc, char **argv)
 		auto &conv1 = experiment.push<layer::Convolution3D>(_filter_size, _filter_size, tmp_filter_size, filter_number, "", 1, 1, tmp_stride);
 		conv1.set_name("conv1");
 		conv1.parameter<bool>("draw").set(false);
-		conv1.parameter<bool>("save_weights").set(true);
+		conv1.parameter<bool>("save_weights").set(false);
 		conv1.parameter<bool>("save_random_start").set(false);
 		conv1.parameter<bool>("log_spiking_neuron").set(false);
 		conv1.parameter<bool>("inhibition").set(true);

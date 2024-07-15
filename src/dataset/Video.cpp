@@ -125,7 +125,7 @@ std::pair<std::string, Tensor<InputType>> Video::next()
 
 		// if (_current_video_name.find("running") != std::string::npos || _current_video_name.find("jogging") != std::string::npos || _current_video_name.find("walking") != std::string::npos)
 		if (_threshold > 0)
-			if (movement_threshold(frame, next_frame))
+			if (!movement_threshold(frame, next_frame))
 			{
 				frame = next_frame;
 				fluct = 0;
@@ -243,7 +243,7 @@ bool Video::movement_threshold(cv::Mat frame, cv::Mat next_frame)
 	difference = frame - next_frame; // diference of second and third frame
 	cv::Scalar sum = cv::sum(difference);
 	int _sum = sum(0);
-	if (sum(0) < _threshold)
+	if (_sum > _threshold)
 	{
 		return true;
 	}
@@ -347,3 +347,34 @@ void Video::_create_param_file_with_default_parameters(std::string fileName)
 	_jsonTextFile << JSON_output;
 	_jsonTextFile.close();
 }
+
+
+
+// The input dataset should look like this: KTH is an example, any video dataset would work
+// KTH
+//     ├── test
+// │   ├── boxing
+// │   │   └── person02_boxing_d1_uncomp.avi ..
+// │   ├── handclapping
+// │   │   └── person02_handclapping_d1_uncomp.avi .. 
+// │   ├── handwaving
+// │   │   └── person02_handwaving_d1_uncomp.avi .. 
+// │   ├── jogging
+// │   │   └── person02_jogging_d1_uncomp.avi .. 
+// │   ├── running
+// │   │   └── person02_running_d1_uncomp.avi ..
+// │   └── walking
+// │       └── person02_walking_d1_uncomp.avi ..
+// ├── train
+// │   ├── boxing
+// │   │   └── person01_boxing_d1_uncomp.avi ..
+// │   ├── handclapping
+// │   │   └── person01_handclapping_d1_uncomp.avi ..
+// │   ├── handwaving
+// │   │   └── person01_handwaving_d1_uncomp.avi ..
+// │   ├── jogging
+// │   │   └── person01_jogging_d1_uncomp.avi ..
+// │   ├── running
+// │   │   └── person01_running_d1_uncomp.avi ..
+// │   └── walking
+//         └── person01_walking_d1_uncomp.avi ..

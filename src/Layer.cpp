@@ -221,7 +221,7 @@ Shape Layer4D::compute_shape(const Shape &previous_shape)
  */
 void Layer4D::forward(uint16_t x_in, uint16_t y_in, uint16_t k_in, std::vector<std::tuple<uint16_t, uint16_t, uint16_t, uint16_t, uint16_t, uint16_t>> &output)
 {
-	// The new coordinates of the spike during the convolution process.
+	// The convolution process.
 	// This equation is calculating the new placement after applying the filter.
 	// s_x means spike_x coordicate, s_y means spike_y coordicate.
 	size_t s_x = x_in + _padding_x >= _filter_width - _stride_x ? (x_in + _padding_x - (_filter_width - _stride_x)) / _stride_x : 0;

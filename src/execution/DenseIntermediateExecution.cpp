@@ -66,7 +66,7 @@ void DenseIntermediateExecution::_process_train_data(AbstractProcess& process, s
 
 	for(size_t i=0; i<n; i++) {
 		for(size_t j=0; j<data.size(); j++) {
-			process.process_train_sample(data[j].first, data[j].second, i, j, data.size());
+			process.process_train_sample(_experiment.name() + ";." + std::to_string(process.index()) + ";." + data[j].first, data[j].second, i, j, data.size());
 
 			if(i == n-1 && data[j].second.shape() != process.shape()) {
 				throw std::runtime_error("Unexpected shape (actual: "+data[j].second.shape().to_string()+", expected: "+process.shape().to_string()+")");

@@ -5,6 +5,7 @@
 #include "layer/Convolution3D.h"
 #include "layer/Pooling.h"
 #include "Distribution.h"
+#include "execution/DenseIntermediateExecution.h"
 #include "execution/SparseIntermediateExecution.h"
 #include "analysis/Svm.h"
 #include "analysis/Activity.h"
@@ -29,15 +30,10 @@
 
 int main(int argc, char **argv)
 {
-
 	size_t _filter_size = atoi(argv[1]);
-	int _repeats = 10;
+	int _repeats = 1;
 	int _epochs = 800;
 	float _th = (argc > 2) ? atoi(argv[2]) : 8.;
-	// size_t _filter_size = 9;
-	// int _repeats = 10;
-	// int _epochs = 800;
-	// float _th = 8.0;
 
 	time_t start_time;
 	time(&start_time);
@@ -47,11 +43,10 @@ int main(int argc, char **argv)
 
 		std::string _dataset = "KTH-" + std::to_string(start_time) + "_2D1D_" + std::to_string(_filter_size) + "_" + std::to_string(_repeat) + "_" + std::to_string(_epochs) + "_" + std::to_string(_th);
 
-		Experiment<SparseIntermediateExecution> experiment(argc, argv, _dataset);
+		Experiment<DenseIntermediateExecution> experiment(argc, argv, _dataset);
 
 		// The new dimentions of a video frame, set to zero if default dimentions are needed.
 		size_t _frame_size_width = 80, _frame_size_height = 60;
-		// size_t _frame_size_width = 91, _frame_size_height = 72;
 
 		// number of frames to skip, this speeds up the action.
 		size_t _video_frames = 10, _train_sample_per_video = 0, _test_sample_per_video = 0, _train_sample_per_video_2 = 0, _test_sample_per_video_2 = 0;
@@ -86,12 +81,14 @@ int main(int argc, char **argv)
 		float t_obj = 0.65;
 		float th_lr = 0.09f;
 		float w_lr = 0.009f;
+		// float th_lr = 0.1f;
+		// float w_lr = 0.01f;
 
 		// filter_width, filter_height, filter_depth, filter_number, model_path, stride_x, stride_y, stride_k, padding_x, padding_y, padding_k
 		auto &conv1 = experiment.push<layer::Convolution3D>(_filter_size, _filter_size, 1, filter_number, "", 1, 1, tmp_stride);
 		conv1.set_name("conv1");
 		conv1.parameter<bool>("draw").set(false);
-		conv1.parameter<bool>("save_weights").set(true);
+		conv1.parameter<bool>("save_weights").set(false);
 		conv1.parameter<bool>("save_random_start").set(false);
 		conv1.parameter<bool>("log_spiking_neuron").set(false);
 		conv1.parameter<bool>("inhibition").set(true);
@@ -104,19 +101,11 @@ int main(int argc, char **argv)
 		conv1.parameter<Tensor<float>>("th").distribution<distribution::Gaussian>(_th, 0.1);
 		conv1.parameter<STDP>("stdp").set<stdp::Biological>(w_lr, 0.1f);
 
-		// auto &conv1_out = experiment.output<TimeObjectiveOutput>(conv1, t_obj);
-		// conv1_out.add_postprocessing<process::SumPooling>(_sum_pooling, _sum_pooling);
-		// conv1_out.add_postprocessing<process::TemporalPooling>(_temporal_sum_pooling);
-		// conv1_out.add_postprocessing<process::FeatureScaling>();
-		// conv1_out.add_analysis<analysis::Activity>();
-		// conv1_out.add_analysis<analysis::Coherence>();
-		// conv1_out.add_analysis<analysis::Svm>();
-
 		// filter_width, filter_height, filter_depth, filter_number, model_path, stride_x, stride_y, stride_k, padding_x, padding_y, padding_k
 		auto &conv2 = experiment.push<layer::Convolution3D>(1, 1, tmp_filter_size, filter_number, "", 1, 1, tmp_stride);
 		conv2.set_name("conv2");
 		conv2.parameter<bool>("draw").set(false);
-		conv2.parameter<bool>("save_weights").set(true);
+		conv2.parameter<bool>("save_weights").set(false);
 		conv2.parameter<bool>("save_random_start").set(false);
 		conv2.parameter<bool>("log_spiking_neuron").set(false);
 		conv2.parameter<bool>("inhibition").set(true);
@@ -128,6 +117,14 @@ int main(int argc, char **argv)
 		conv2.parameter<Tensor<float>>("w").distribution<distribution::Uniform>(0.0, 1.0);
 		conv2.parameter<Tensor<float>>("th").distribution<distribution::Gaussian>(_th, 0.1);
 		conv2.parameter<STDP>("stdp").set<stdp::Biological>(w_lr, 0.1f);
+
+		auto &conv1_out = experiment.output<TimeObjectiveOutput>(conv1, t_obj);
+		// conv1_out.add_postprocessing<process::SumPooling>(_sum_pooling, _sum_pooling);
+		// conv1_out.add_postprocessing<process::TemporalPooling>(_temporal_sum_pooling);
+		// conv1_out.add_postprocessing<process::FeatureScaling>();
+		// conv1_out.add_analysis<analysis::Activity>();
+		// conv1_out.add_analysis<analysis::Coherence>();
+		// conv1_out.add_analysis<analysis::Svm>();
 
 		auto &conv2_out = experiment.output<TimeObjectiveOutput>(conv2, t_obj);
 		conv2_out.add_postprocessing<process::SumPooling>(_sum_pooling, _sum_pooling);
