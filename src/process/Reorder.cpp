@@ -44,7 +44,7 @@ void UniformReorder::_process(Tensor<float> &in) const
 			for (size_t z = 0; z < in.shape().dim(2); z++)
 				for (size_t k = 0; k < in.shape().dim(3); k++)
 				{
-					float v = in.at(x,y,z,t);
+					float v = in.at(x,y,z,k);
 					if (v<min_time) min_time=v;
 					if (v>max_time) max_time=v;
 
@@ -59,6 +59,7 @@ void UniformReorder::_process(Tensor<float> &in) const
 			for (size_t z = 0; z < in.shape().dim(2); z++)
 				for (size_t k = 0; k < in.shape().dim(3); k++)
 				{
+					float v = in.at(x,y,z,k);
 					in.at(x, y, z, k) = this->_min_time + (v-min_time)/(max_time-min_time) * (this->_max_time - this->_min_time);
 				}
 		}
