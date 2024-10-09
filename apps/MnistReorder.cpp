@@ -14,6 +14,7 @@
 #include "process/OnOffFilter.h"
 #include "process/Scaling.h"
 #include "process/Pooling.h"
+#include "process/Reorder.h"
 #include "stdp/Linear.h"
 #include "stdp/BiologicalMultiplicative.h"
 #include "analysis/SaveOutput.h"
@@ -46,32 +47,33 @@ int main(int argc, char **argv)
 	int fn=argc>3?atoi(argv[2]):32;
 	float t_obj=argc>4?atoi(argv[3]):0.75;
 
-	auto &conv2 = experiment.push<layer::Convolution>(ks, ks, fn);
-	conv2.set_name("conv2");
-	conv2.parameter<bool>("draw").set(false);
-	conv2.parameter<bool>("save_weights").set(true);
-	conv2.parameter<bool>("inhibition").set(true);
-	conv2.parameter<uint32_t>("epoch").set(100);
-	conv2.parameter<float>("annealing").set(0.95f);
-	conv2.parameter<float>("min_th").set(1.0f);
-	conv2.parameter<float>("t_obj").set(t_obj);
-	conv2.parameter<float>("lr_th").set(th_lr);
-	conv2.parameter<bool>("wta_infer").set(false);
-	conv2.parameter<Tensor<float>>("w").distribution<distribution::Uniform>(0.0, 1.0);
-	conv2.parameter<Tensor<float>>("th").distribution<distribution::Gaussian>(8.0, 0.1);
-	conv2.parameter<STDP>("stdp").set<stdp::Biological>(w_lr, 0.1f);
+	auto &conv1 = experiment.push<layer::Convolution>(ks, ks, fn);
+	conv1.set_name("conv1");
+	conv1.parameter<bool>("draw").set(false);
+	conv1.parameter<bool>("save_weights").set(true);
+	conv1.parameter<bool>("inhibition").set(true);
+	conv1.parameter<uint32_t>("epoch").set(100);
+	conv1.parameter<float>("annealing").set(0.95f);
+	conv1.parameter<float>("min_th").set(1.0f);
+	conv1.parameter<float>("t_obj").set(t_obj);
+	conv1.parameter<float>("lr_th").set(th_lr);
+	conv1.parameter<bool>("wta_infer").set(false);
+	conv1.parameter<Tensor<float>>("w").distribution<distribution::Uniform>(0.0, 1.0);
+	conv1.parameter<Tensor<float>>("th").distribution<distribution::Gaussian>(8.0, 0.1);
+	conv1.parameter<STDP>("stdp").set<stdp::Biological>(w_lr, 0.1f);
 
 #ifdef ENABLE_QT
-	conv2.plot_threshold(true);
-	conv2.plot_reconstruction(true);
+	conv1.plot_threshold(true);
+	conv1.plot_reconstruction(true);
 #endif
 
 	auto &conv1_out = experiment.output<TimeObjectiveOutput>(conv1, t_obj);
-	conv1_out.add_postprocessing<process::UniformReorder>(0.1, 0.9);
 	conv1_out.add_analysis<analysis::Activity>();
 	conv1_out.add_analysis<analysis::Coherence>();
-	#conv1_out.add_analysis<analysis::Svm>();
+	//conv1_out.add_analysis<analysis::Svm>();
 
+	experiment.push<process::UniformReorder>(0.1f, 0.9f);
+	
 	auto &conv2 = experiment.push<layer::Convolution>(ks, ks, fn);
 	conv2.set_name("conv2");
 	conv2.parameter<bool>("draw").set(false);

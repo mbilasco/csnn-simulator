@@ -1,19 +1,19 @@
-#include "process/UniformReorder.h"
+#include "process/Reorder.h"
 
 using namespace process;
 
-static RegisterClassParameter<UniformReorder, ProcessFactory> _registerSum("UniformReorder");
+static RegisterClassParameter<UniformReorder, ProcessFactory> _registerUReorder("UniformReorder");
 
-UniformReorder::UniformReorder() : UniquePassProcess(_registerSum),_min_time(0),_max_time(1)
+UniformReorder::UniformReorder() : UniquePassProcess(_registerUReorder),_min_time(0.1f),_max_time(0.9f)
 {
 	add_parameter("min_time", _min_time);
 	add_parameter("max_time", _max_time);
 }
 
-UniformReorder::UniformReorder(size_t min_time, size_t max_time) : UniformReorder()
+UniformReorder::UniformReorder(float min_time, float max_time) : UniformReorder()
 {
-	parameter<size_t>("min_time").set(min_time);
-	parameter<size_t>("max_time").set(max_time);
+	parameter<float>("min_time").set(min_time);
+	parameter<float>("max_time").set(max_time);
 }
 
 Shape UniformReorder::compute_shape(const Shape &shape)
@@ -44,7 +44,7 @@ void UniformReorder::_process(Tensor<float> &in) const
 			for (size_t z = 0; z < in.shape().dim(2); z++)
 				for (size_t k = 0; k < in.shape().dim(3); k++)
 				{
-					float v = in.at(x,y,z,t);
+					float v = in.at(x,y,z,k);
 					if (v<min_time) min_time=v;
 					if (v>max_time) max_time=v;
 
@@ -59,6 +59,7 @@ void UniformReorder::_process(Tensor<float> &in) const
 			for (size_t z = 0; z < in.shape().dim(2); z++)
 				for (size_t k = 0; k < in.shape().dim(3); k++)
 				{
+					float v = in.at(x,y,z,k);
 					in.at(x, y, z, k) = this->_min_time + (v-min_time)/(max_time-min_time) * (this->_max_time - this->_min_time);
 				}
 		}
