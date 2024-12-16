@@ -3,8 +3,6 @@
 
 #include <iostream>
 #include <cmath>
-#include <cblas.h>
-#include <cblas-atlas.h>
 #include "Tensor.h"
 
 namespace _priv {

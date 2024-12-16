@@ -2,7 +2,6 @@
 #define _ANALYSIS_SVM_H
 
 #include "Analysis.h"
-#include "dep/libsvm/svm.h"
 #include <filesystem>
 #include "tool/Operations.h"
 
@@ -37,16 +36,13 @@ namespace analysis {
 		float _c;
 
 		std::map<std::string, double> _label_index;
+		std::vector<std::string> _train_labels,_test_labels;
+		std::vector<Tensor<float>> _train_samples,_test_samples;
+		
 		size_t _size;
 		size_t _node_count;
 		size_t _sample_count;
 		size_t _draw;
-
-
-		svm_problem _problem;
-		svm_model* _model;
-		svm_node* _train_nodes;
-		svm_node* _test_nodes;
 
 		size_t _correct_sample;
 		size_t _total_sample;
