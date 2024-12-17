@@ -17,6 +17,7 @@
 #include "stdp/Linear.h"
 #include "stdp/BiologicalMultiplicative.h"
 #include "analysis/SaveOutput.h"
+#include <Python.h>
 
 int main(int argc, char **argv)
 {
@@ -32,11 +33,20 @@ int main(int argc, char **argv)
 	{
 		throw std::runtime_error("Require to define INPUT_PATH variable");
 	}
+	
+	const char *python_path_ptr = std::getenv("PYTHONPATH");
+	
+	if (python_path_ptr == nullptr)
+	{
+		throw std::runtime_error("Require to define PYTHONPATH variable and to include /tmp in it");
+	}
+
+	Py_Initialize();
 
 	std::string input_path(input_path_ptr);
 
-	experiment.add_train<dataset::Mnist>(input_path + "train-images.idx3-ubyte", input_path + "train-labels.idx1-ubyte",1000);
-	experiment.add_test<dataset::Mnist>(input_path + "t10k-images.idx3-ubyte", input_path + "t10k-labels.idx1-ubyte",100);
+	experiment.add_train<dataset::Mnist>(input_path + "train-images.idx3-ubyte", input_path + "train-labels.idx1-ubyte",100);
+	experiment.add_test<dataset::Mnist>(input_path + "t10k-images.idx3-ubyte", input_path + "t10k-labels.idx1-ubyte",10);
 
 	float th_lr = 0.1f;
 	float w_lr = 1.0f;
@@ -123,4 +133,6 @@ int main(int argc, char **argv)
 	experiment.run(10000);
 
 	return experiment.wait();
+
+	Py_Finalize();
 }

@@ -10,6 +10,15 @@ In order to run a two-stream experiment, chech the TwoStream.cpp class where two
 
 The SVM.cpp class can be used to test the classification rate of the SVM alone without an SNN. This is useful to make sure that the SNN is indeed adding a benefit.
 
+This specific branch consider using SVM implemented with sklearn. The SVM.cpp class is just a wrapper for the sklearn LinearSVM tool.
+It requires the instalation of pybind11 (python3 -m pip install pybind11).
+CMakeList.txt should be updated in order to set the includes required (/home/bilasco/.local/bin/pybind11-config --includes)
+PYTHONPATH should be defined to include "/tmp" folder. Intermediate files are generated in as **"/tmp/PID_xxx"** files
+
+An running example is available in **apps/mnist/MNIST_L3**
+One should consider including Python.h, doing Py_Initialize() in the beggining and Py_Finalize() in the end, checking that PYTHONPATH system variable was set accordingly.
+
+
 The FeatureEvaluation.cpp class can be used to re-evaluate extracted and saved features by the SVM alone without re-training and re-running an SNN.
 
 For execution policies, SparseIntermediateExecutionNew can be used for saving certain things like output features adn output timestamps (features but as spikes). If there is no need to save anything use SparseIntermediateExecution instead, it's faster. DenseIntermediateExecution is even faster.

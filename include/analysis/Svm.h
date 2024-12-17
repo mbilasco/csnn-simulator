@@ -18,6 +18,7 @@ namespace analysis {
 	public:
 		Svm();
 		Svm(const size_t &draw);
+		~Svm();
 
 		Svm(const Svm& that) = delete;
 		Svm& operator=(const Svm& that) = delete;
@@ -33,19 +34,24 @@ namespace analysis {
 		virtual void after_test();
 
 	private:
+		void process_as_npy_sample(const std::string& label, const Tensor<float>& sample, std::vector<int> &_labels_npy, std::vector<float> &_samples_npy);
+		void call_python_binding(const std::vector<int> &train_labels, const std::vector<float> &train_samples, const std::vector<int> &test_labels, const std::vector<float> &test_samples);
 		float _c;
 
 		std::map<std::string, double> _label_index;
-		std::vector<std::string> _train_labels,_test_labels;
-		std::vector<Tensor<float>> _train_samples,_test_samples;
+		std::vector<int> _train_labels,_test_labels;
+		std::vector<float> _train_samples,_test_samples;
 		
-		size_t _size;
-		size_t _node_count;
 		size_t _sample_count;
 		size_t _draw;
 
 		size_t _correct_sample;
 		size_t _total_sample;
+
+		size_t _correct_sample_train;
+		size_t _total_sample_train;
+		
+		//size_t _tensor_size;
 	};
 }
 
